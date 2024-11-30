@@ -8,8 +8,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: '123456の小家',
-  tagline: '可爱不是正确！',
+  title: '狐莱姆在盯着你...',
+  tagline: '可安可可可爱了!',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -48,7 +48,7 @@ const config = {
 
         },
         blog: {
-          blogSidebarTitle: '111',
+          blogSidebarTitle: '乾狐离光的日记本',
           blogSidebarCount: 10,
           showReadingTime: true,
           
@@ -64,22 +64,26 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/fox.jpg',
       navbar: {
-        title: '123456の小家',
+        title: '乾狐的小窝',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
         },
         items: [
-          {to: '/blog', label: '456', position: 'left'},
+          {to: '/blog', label: '不准看这里', position: 'left'},
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: '123',
+            label: '可以看这里',
           },
-          
+          {
+            href: 'https://api.lolimi.cn/60/',
+            label: '每日60秒',
+            position: 'left',
+          },
           {
             href: 'https://github.com/QHMY114514',
             label: 'MyGitHub',
@@ -91,50 +95,45 @@ const config = {
         style: 'light',
         links: [
           {
-            title: '不关于我',
+            title: '联系狐狸',
             items: [
               {
-                label: '兔兔的自我介绍',
-                to: '/docs/intro',
+                label: '我的哔哩哔哩主页',
+                href: 'https://space.bilibili.com/454816001',
               },
               {
-                label: '兔兔的QQ',
-                to: 'https://qm.qq.com/cgi-bin/qm/qr?k=cUojLoZsBE0HvCHgOjuZOGNiJkZ06-z0&noverify=0&personal_qrcode_source=3',
-              },
-            ],
-          },
-          {
-            title: '友情链接',
-            items: [
-              {
-                label: '兔兔的哔哩哔哩主页',
-                href: 'https://space.bilibili.com/1333478733',
+                label: '我的个人群(QQ)',
+                href: 'https://qm.qq.com/q/bImTc3BPsA',
               },
               {
-                label: 'KasumiBot(By 户山兔兔）',
-                href: 'https://ksmbot.top',
-              },
-              {
-                label: 'YukieBot(By 户山兔兔）',
-                href: 'https://Yukiebot.top',
+                label: 'Flime官方群(QQ)',
+                href: 'https://qm.qq.com/q/qatSwAhTQk',
               }
             ],
           },
           {
-            title: '还有什么东西呢（？',
+            title: '你想找什么?',
             items: [
               {
-                label: '兔兔的博客',
+                label: '狐狸是谁?',
+                to: '/docs/intro',
+              },
+              {
+                label: '狐狸怎么叫?',
                 to: '/blog',
               },
               {
-                label: '兔兔的GitHub主页',
-                href: 'https://github.com/DanielToyama',
+                label: '小玩具',
+                to: '/docs/game',
+              },
+              {
+                label: '狐狸的GitHub主页',
+                href: 'https://github.com/QHMT114514',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} 兔兔的个人小家. Built with Docusaurus.<br /><img style="width:30px;height:30px;margin-bottom:-10px"src = "https://moe.one/view/img/ico64.png"/><a href="https://icp.gov.moe/?keyword=20240512" target="_blank">萌ICP备20240512号</a>`,
+        copyright: `Copyright © ${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,

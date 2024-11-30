@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>BALL SIMULATE</title>
+    <style>
+        html,
+        body {
+            background-color: #222;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        div.ballmap {
+            height: calc(min(95vh, 95vw));
+            margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
+            background-color: #fff;
+        }
+
+        canvas.ballmap {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body onmousemove=/HideMenu()/ oncontextmenu="return false" ondragstart="return false" onselectstart="return false"
+    onselect="document.selection.empty()" oncopy="document.selection.empty()" onbeforecopy="return false"
+    onmouseup="document.selection.empty()">
+    <div class="ballmap">
+        <canvas id="ballmap" class="ballmap" width="2100" height="2100">很遗憾你的浏览器不支持这个模拟</canvas>
+    </div>
+
+    <script>
+        const version = 7;
+
+        const ballradius = 50;
+        const mapsize = [2100, 2100];
+        const ballat = [1000, 1000];
+        const tickspeed = 120;
+        const gravity = [0, 12 / tickspeed];
+
+        const useraccvel = 24 / tickspeed;
+        const useraccdeb = 0 ** (1 / tickspeed);
+
+        const veldeb = 0.8 ** (1 / tickspeed);
+
+        var ballmap = document.getElementById("ballmap");
+        var ctx = ballmap.getContext("2d");
+
+        var onLeft = false;
+        var onUp = false;
+        var onRight = false;
+        var onDown = false;
+
+        var ballpos = [1050, 1050];
+        var ballshowpos = [1050, 1050];
+        var ballvel = [0, 0];
+        var ballacc = [0, 0];
+        var balldis = 0;
+        var ballspd = 0;
+
+        var ballposhis = [[1050, 1050]];
+        var framehis = [];
+
+        var useracc = [0, 0];
+
+        var tick = 0;
+        var outrangetick = 0;
+
+        var time = new Date();
+
+        var nogravity = false;
+        var noairresistance = false;
+        var brownian = false;
+        var ingorewall = false;
+        var pause = false;
+        var showstate = true;
+        var colorfulball = true;
+        var trailing = true;
+        var power = 5;
+
+        setInterval(() => {
+            if (!pause) {
+                tick++;
+                Draw();
+                Cal_move();
+                Cal_ball();
+            }
+        }, 1000 / tickspeed);
+
+        function Draw() {
+            ctx.clearRect(0, 0, ...mapsize);
+            if (showstate) {
+                ctx.font = "60px Consolas";
+                ctx.textAlign = "left";
+                ctx.fillStyle = "blue";
+                ctx.fillText(`Tick:${tick}`, 10, 50);
+                ctx.fillText(`pos:(${Math.round(ballpos[0] - 1050)},${Math.round(ballpos[1] - 1050)})`, 10, 110);
+                ctx.fillText(`vel:(${Math.round(ballvel[0] * 100 / 1.2)},${Math.round(ballvel[1] * 100 / 1.2)})`, 10, 170);
+                ctx.fillText(`acc:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
+                ctx.fillText(`dis:${Math.round(balldis * 100)}`, 10, 290);
+                ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.2)}`, 10, 350);
+                ctx.fillStyle = "goldenrod";
+                ctx.fillText(`HOTKEY`, 10, 2100 - 680);
+                ctx.fillText(`F - State`, 10, 2100 - 620);
+                ctx.fillText(`P - Pause`, 10, 2100 - 560);
+                ctx.fillText(`M - Reposition`, 10, 2100 - 500);
+                ctx.fillText(`0~9 - Move Power`, 10, 2100 - 440);
+                ctx.fillText(`↑↓←→/WASD - Move`, 10, 2100 - 380);
+                ctx.fillText(`G - Gravity`, 10, 2100 - 320);
+                ctx.fillText(`T - Trailing`, 10, 2100 - 260);
+                ctx.fillText(`I - Ingore Wall`, 10, 2100 - 200);
+                ctx.fillText(`C - Colorful Ball`, 10, 2100 - 140);
+                ctx.fillText(`R - Air Resistance`, 10, 2100 - 80);
+                ctx.fillText(`B - Brownian Motion`, 10, 2100 - 20);
+                ctx.fillStyle = "green";
+                ctx.textAlign = "right";
+                ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 50);
+                if (brownian) {
+                    ctx.fillStyle = "red";
+                } else {
+                    ctx.fillStyle = "green";
+                }
+                ctx.fillText(`AirResistance:${brownian || !noairresistance}`, 2090, 110);
+                ctx.fillText(`Gravity:${!brownian && !nogravity}`, 2090, 170);
+                ctx.fillStyle = "green";
+                ctx.fillText(`BrownianMotion:${brownian}`, 2090, 230);
+                ctx.fillText(`ColorfulBall:${colorfulball}`, 2090, 290);
+                ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 350);
+                ctx.fillText(`Trailing:${trailing}`, 2090, 410);
+                ctx.fillText(`Pause:${pause}`, 2090, 470);
+            }
+            ctx.font = "128px Consolas";
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#CCCCCC";
+            ctx.fillText(`BALL SIMULATE v${version}`, 1050, 950);
+            ctx.fillText("MADE BY QHLG", 1050, 1150);
+            ctx.font = "80px Consolas";
+            ctx.fillText("©2024 QHLG，All rights reserved.", 1050, 1035);
+            for (let a = 19; a > 0 && trailing; a--) {
+                if (a >= ballposhis.length) continue;
+                ctx.beginPath();
+                if (colorfulball) {
+                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 4 * ballspd)}, 100%, ${50 + 2.5 * a}%, ${1 - 0.05 * a})`;
+                } else {
+                    ctx.fillStyle = `hsla(0, 100%, 0%, ${0.5 - 0.025 * a})`;
+                }
+                ctx.arc(ballposhis[a][0], ballposhis[a][1], ballradius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            ctx.beginPath();
+            if (colorfulball) {
+                ctx.fillStyle = `hsla(${Math.max(0, 180 - 4 * ballspd)}, 100%, 40%, 1)`;
+            } else {
+                ctx.fillStyle = `#000`;
+            }
+            ctx.arc(ballshowpos[0], ballshowpos[1], ballradius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.lineWidth = 5;
+            if (colorfulball) {
+                ctx.strokeStyle = "#000";
+            } else {
+                ctx.strokeStyle = "#aaa";
+            }
+            ctx.arc(ballshowpos[0], ballshowpos[1], ballradius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function Cal_move() {
+            if (onLeft) {
+                useracc[0] = -useraccvel / 5 * power;
+            }
+            if (onUp) {
+                useracc[1] = -useraccvel / 5 * power;
+            }
+            if (onRight) {
+                useracc[0] = useraccvel / 5 * power;
+            }
+            if (onDown) {
+                useracc[1] = useraccvel / 5 * power;
+            }
+            if (!onDown && !onLeft && !onUp && !onRight) {
+                useracc = [useracc[0] * useraccdeb, useracc[1] * useraccdeb];
+            }
+        }
+
+        function Cal_ball() {
+            ballspd = (ballvel[0] ** 2 + ballvel[1] ** 2) ** .5;
+            balldis += ballspd / 100;
+            ballpos = [ballpos[0] + ballvel[0], ballpos[1] + ballvel[1]];
+            ballvel = [ballvel[0] + ballacc[0], ballvel[1] + ballacc[1]];
+            if (brownian) {
+                ballacc = [Math.sin(tick * Math.random()) + useracc[0], Math.sin(tick * Math.random()) + useracc[1]];
+            } else {
+                if (nogravity) {
+                    ballacc = [useracc[0], useracc[1]];
+                } else {
+                    ballacc = [gravity[0] + useracc[0], gravity[1] + useracc[1]];
+                }
+            }
+            if (ingorewall) {
+                outrangetick = 1;
+                while (outrangetick) {
+                    if (ballpos[0] < 0) {
+                        ballpos[0] += mapsize[0];
+                    } else if (ballpos[1] < 0) {
+                        ballpos[1] += mapsize[1];
+                    } else if (ballpos[0] > mapsize[0]) {
+                        ballpos[0] -= mapsize[0];
+                    } else if (ballpos[1] > mapsize[1]) {
+                        ballpos[1] -= mapsize[1];
+                    } else {
+                        outrangetick = 0;
+                    }
+                }
+                ballshowpos = ballpos;
+            } else {
+                if (outrangetick >= 5) {
+                    outrangetick = 0;
+                    if (ballpos[0] < ballradius) {
+                        ballpos[0] = ballradius;
+                    } else if (ballpos[1] < ballradius) {
+                        ballpos[1] = ballradius;
+                    } else if (ballpos[0] > mapsize[0] - ballradius) {
+                        ballpos[0] = mapsize[0] - ballradius;
+                    } else if (ballpos[1] > mapsize[1] - ballradius) {
+                        ballpos[1] = mapsize[1] - ballradius;
+                    }
+                } else {
+                    if (ballpos[0] < ballradius) {
+                        ballvel[0] = -ballvel[0] + ballacc[0];
+                        outrangetick++;
+                    } else if (ballpos[1] < ballradius) {
+                        ballvel[1] = -ballvel[1] + ballacc[1];
+                        outrangetick++;
+                    } else if (ballpos[0] > mapsize[0] - ballradius) {
+                        ballvel[0] = -ballvel[0] + ballacc[0];
+                        outrangetick++;
+                    } else if (ballpos[1] > mapsize[1] - ballradius) {
+                        ballvel[1] = -ballvel[1] + ballacc[1];
+                        outrangetick++;
+                    } else {
+                        outrangetick = Math.max(outrangetick--, 0);
+                    }
+                }
+                ballshowpos = [Math.min(Math.max(ballpos[0], ballradius), mapsize[0] - ballradius), Math.min(Math.max(ballpos[1], ballradius), mapsize[1] - ballradius)];
+            }
+            if (brownian || !noairresistance) {
+                ballvel = [ballvel[0] * veldeb, ballvel[1] * veldeb];
+            }
+            ballposhis.unshift(ballshowpos);
+            ballposhis.slice(0, 19);
+        }
+
+        window.onkeydown = (e) => {
+            if (e.keyCode == 48) {
+                power = 10;
+                Draw();
+                return;
+            }
+            if (e.keyCode >= 49 && e.keyCode <= 57) {
+                power = e.keyCode - 48;
+                Draw();
+                return;
+            }
+            switch (e.keyCode) {
+                case 37: case 65:
+                    goLeft();
+                    return;
+                case 38: case 87:
+                    goUp();
+                    return;
+                case 39: case 68:
+                    goRight();
+                    return;
+                case 40: case 83:
+                    goDown();
+                    return;
+                case 71:
+                    nogravity = !nogravity;
+                    Draw();
+                    return;
+                case 82:
+                    noairresistance = !noairresistance;
+                    Draw();
+                    return;
+                case 73:
+                    ingorewall = !ingorewall;
+                    Draw();
+                    return;
+                case 80:
+                    pause = !pause;
+                    Draw();
+                    return;
+                case 70:
+                    showstate = !showstate;
+                    Draw();
+                    return;
+                case 66:
+                    brownian = !brownian;
+                    Draw();
+                    return;
+                case 67:
+                    colorfulball = !colorfulball;
+                    Draw();
+                    return;
+                case 84:
+                    trailing = !trailing;
+                    Draw();
+                    return;
+                case 77:
+                    onLeft = false;
+                    onUp = false;
+                    onRight = false;
+                    onDown = false;
+
+                    ballpos = [1050, 1050];
+                    ballshowpos = [1050, 1050];
+                    ballvel = [0, 0];
+                    ballacc = [0, 0];
+                    balldis = 0;
+                    ballspd = 0;
+
+                    ballposhis = [[1050, 1050]];
+
+                    useracc = [0, 0];
+
+                    tick = 0;
+                    outrangetick = 0;
+
+                    nogravity = false;
+                    noairresistance = false;
+                    brownian = false;
+                    ingorewall = false;
+                    pause = false;
+                    showstate = true;
+                    colorfulball = true;
+                    trailing = true;
+                    power = 5;
+                    Draw();
+                    return;
+            }
+        }
+
+        window.onkeyup = (e) => {
+            switch (e.keyCode) {
+                case 37: case 65:
+                    endLeft();
+                    return;
+                case 38: case 87:
+                    endUp();
+                    return;
+                case 39: case 68:
+                    endRight();
+                    return;
+                case 40: case 83:
+                    endDown();
+                    return;
+            }
+        }
+
+        function goLeft() {
+            if (!onLeft && !onRight) {
+                onLeft = true;
+            }
+        }
+
+        function goUp() {
+            if (!onUp && !onDown) {
+                onUp = true;
+            }
+        }
+
+        function goRight() {
+            if (!onRight && !onLeft) {
+                onRight = true;
+            }
+        }
+        function goDown() {
+            if (!onDown && !onUp) {
+                onDown = true;
+            }
+        }
+
+
+        function endLeft() {
+            onLeft = false;
+        }
+
+        function endUp() {
+            onUp = false;
+        }
+
+        function endRight() {
+            onRight = false;
+        }
+
+        function endDown() {
+            onDown = false;
+        }
+
+    </script>
+</body>
+
+</html>

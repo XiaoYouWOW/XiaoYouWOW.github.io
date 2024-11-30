@@ -2,54 +2,76 @@
 sidebar_position: 1
 ---
 
-# 关于兔兔
+# 关于狐狸
 
-欢迎你的来访！我是户山兔兔！音游人/技术爱好者/二次元
+## 我
 
-## 音游人
+### 音游
 
-Phigros15.3/Orzmic12.49/Malody5Dan/Rotaeno14.7
+- Phigros
+> **15.91**,金45<br />迷宫1g,狂喜2g成最大遗憾
 
-其实是基本上什么音游都玩，板子上面满满一页都是音游。曾经被朋友安利了音游，然后因为享受节奏的感觉成为了高浓度的音游人。
+- Orzmic
+> **13.114**(+0.5~因为后面定数上调)
 
+- Malody
+> 4K<br />v2 **r3dan**<br />v3 **r4dan**<br />玩了三年还这么菜
 
-<img src="../docs/phi.jpg" alt="Image Alt Text" width="420" height="800" />
+- Milthm
+> **11.54**<br />★★
 
+- 范式:起源
+> **140.17**
 
-<img src="../docs/orz.jpg" alt="Image Alt Text" width="500" height="800" />
-<img src="../docs/mai.jpg" alt="Image Alt Text" width="1200" height="400" />
-<img src="../docs/pjsk.jpg" alt="Image Alt Text" width="650" height="470" />
-<img src="../docs/pad.jpg" alt="Image Alt Text" width="500" height="400" />
+- MuseDash
+> LEVEL **36**<br />~~限免买的~~
 
-主要玩的音游其实就几个，不过有了其他的新音游也会第一时间去体验
+- Arcaea
+> **2.53**<br />~~您可以免费体验本游戏~~
 
-## 技术爱好者
+- DanceRailRefresh
+- DanceRail3
 
-小时候就痴迷于电脑和各种电子设备。
+<img src="../docs/b19.jpg" alt="Image Alt Text" width="320" height="655" />
+<br />
+<img src="../docs/b50.jpg" alt="Image Alt Text" width="560" height="460" />
+<br />
+<img src="https://api.lolimi.cn/API/preview/api.php?qq=&msg=我去是音游大神&msg2=教我教我教我&type=115" width="400px" height="130px" alt="这里是一张没加载出来的图片"></img>
 
-高中时候为了能和群友们开好我的世界基岩版服务器学会了nodejs的基本编写，能够写简单的JavaScript代码，也以此为机缘了解了QQ机器人的开发。
+### 安慕希
 
-经手了mc基岩机器人框架[Sparkbridge](http://sparkbridge.cn)的开发,也为热爱的Bangdream开发过[Ksmbot机器人](http://ksmbot.top)（仍在维护）
+- 正版玩家!
+> 主修1.20.1~1.21版本
 
-目前主持[Yukie雪绘Bot-Orzmic查分机器人](http://yukiebot.top)的主要开发，开发过程中受益匪浅，学到不少东西。（~~我也是对音游圈有点影响的人了吧~~）
+### 二游
 
-希望能够保持着对新事物的好奇心和探索吧。
+- 鸣潮玩家,自封安可厨
+> 可安可可可爱了
 
-## 二次元
+- 雀魂玩家,四麻雀士,三麻雀杰(掉雀士了)
 
-被网友拉去看番，从此一发不可收拾（x
+> 谁家小孩抢我单骑四跳刻↓
+> <img src="../docs/mahjong.jpg" alt="Image Alt Text" width="600" height="270" />
 
-看过番其实屈指可数，没有什么时间去看（（（
+### 米游
 
-更多的时候是音游的二次元浓度比较高，或者说玩玩ba这样的二游，听动漫的歌曲。
+- 前原神玩家,前绝区零玩家,星铁玩家
+- **309.7分** 1+1阮梅持有者
 
-### 更多的...
+## 乾狐梦影
 
-我本身的话，其实也算是乐观外向的人吧(嗯
+乾狐梦影,是一只狐狸
 
-去到哪里都喜欢和人搭话，被称为“社交恐怖分子”
+生日 *2019-2-25*
 
-喜欢交朋友，自来熟
+## 乾狐离光
 
-这就是兔兔哦，也希望和你成为朋友哦~~
+乾狐离光,也是一只狐狸
 
+生日 *2020-3-7*
+
+## Flime
+
+我的bot,点击此处加入[Flime官方群](https://qm.qq.com/q/3Mlo2vX4Ks)
+
+<img src="https://yugan.love/?name=小南梁" width="200px" height="200px" alt="这里是一张没加载出来的图片"></img>
