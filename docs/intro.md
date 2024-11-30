@@ -36,7 +36,7 @@ sidebar_position: 1
 <br />
 <img src="../docs/b50.jpg" alt="Image Alt Text" width="560" height="460" />
 <br />
-<img src="https://api.lolimi.cn/API/preview/api.php?qq=&msg=我去是音游大神&msg2=教我教我教我&type=115" width="400px" height="130px" alt="这里是一张没加载出来的图片"></img>
+<img src="https://api.lolimi.cn/API/preview/api.php?qq=&msg=我去是音游大神&msg2=教我教我教我&type=115" width="400px" height="130px" alt="加载不出来!!!我生吃你妈!!!"></img>
 
 ### 安慕希
 
@@ -47,6 +47,8 @@ sidebar_position: 1
 
 - 鸣潮玩家,自封安可厨
 > 可安可可可爱了
+
+> 像我这种长期刷官方评论的（<br />这种对我来说都是看过好多遍的梗了）<br />*——户山兔兔《论梗》*
 
 - 雀魂玩家,四麻雀士,三麻雀杰(掉雀士了)
 
@@ -74,4 +76,4 @@ sidebar_position: 1
 
 我的bot,点击此处加入[Flime官方群](https://qm.qq.com/q/3Mlo2vX4Ks)
 
-<img src="https://yugan.love/?name=小南梁" width="200px" height="200px" alt="这里是一张没加载出来的图片"></img>
+<img src="https://yugan.love/?name=小南梁" width="200px" height="200px" alt="这里是一张小男娘表情包"></img>
