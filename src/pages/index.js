@@ -62,7 +62,7 @@ export default function () {
                 <div id='index-page-bg' style={{ backgroundImage: `url(${backgroundImage})` }}></div>
                 <div id='index-page-bg-mask'></div>
                 <div id='index-page-main'>
-                    <div id='logo'>
+                    <div id='logo' style={{textAlign: "center"}}>
                         <span>一只快速的Flime跳过了懒惰的狐狸</span>
                     </div>
 
