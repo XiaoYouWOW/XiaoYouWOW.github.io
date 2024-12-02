@@ -13,7 +13,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://flime.top',
+  url: 'https://qhlg.flime.top',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -66,7 +66,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/fox.jpg',
       navbar: {
-        title: '乾狐的小窝',
+        title: '乾狐之家,狐狸的衣柜!',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
@@ -133,7 +133,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright ©${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.<br /><a href="https://icp.gov.moe/?keyword=20245009" target="_blank">萌ICP备20245009号</a>`,
+        copyright: `Copyright ©${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.<br /><img style="width:32px;height:32px;margin-bottom:-12px" src="https://moe.one/view/img/ico64.png"></img><a href="https://icp.gov.moe/?keyword=20245009" target="_blank">萌ICP备20245009号</a>`,
       },
       prism: {
         theme: prismThemes.github,

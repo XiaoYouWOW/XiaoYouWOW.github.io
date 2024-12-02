@@ -5,6 +5,7 @@ import Layout from '@theme/Layout';
 import './index.css'
 
 export default function () {
+
     // 定义背景图片链接数组
     const desktopBackgroundImages = [
         "https://api.miaomc.cn/image/get",
@@ -33,8 +34,21 @@ export default function () {
         setBackgroundImage(images[randomIndex]);
     };
 
+    const [logoColor, setLogoColor] = useState('');
+    const [openTime, setOpenTime] = useState('');
+
     // 在组件挂载时选择背景图片
     useEffect(() => {
+        setInterval(() => {
+            setLogoColor(`hsl(${(new Date() / 20) % 360},50%,70%)`);
+        }, 33);
+        setInterval(() => {
+            setOpenTime(TimetoText(new Date() - 1732948276347));
+            function TimetoText(time) {
+                return `${Math.round(time / 864) / 100000}天`
+            }
+        }, 1000);
+
         // 初始化时选择背景图片
         selectRandomBackgroundImage();
         isMobileRatioOld = isMobileRatio();
@@ -42,7 +56,7 @@ export default function () {
         // 监听窗口大小变化，动态调整背景图片
         const handleResize = () => {
             if (isMobileRatio() == isMobileRatioOld) return;
-            isMobileRatioOld =  isMobileRatio();
+            isMobileRatioOld = isMobileRatio();
             selectRandomBackgroundImage();
         };
 
@@ -55,6 +69,7 @@ export default function () {
         };
     }, []);
 
+
     return (
         <Layout description='乾狐のBlog站，乾狐的小站，乾狐离光，乾狐梦影，QHMY, QHLG, Flime'>
             <div id='index-page-container'>
@@ -62,12 +77,11 @@ export default function () {
                 <div id='index-page-bg' style={{ backgroundImage: `url(${backgroundImage})` }}></div>
                 <div id='index-page-bg-mask'></div>
                 <div id='index-page-main'>
-                    <div id='logo' style={{textAlign: "center"}}>
-                        <span>一只快速的Flime跳过了懒惰的狐狸</span>
+                    <div id='logo' style={{ textAlign: "center", color: `${logoColor}` }}>
+                        <span>一只快速的Flime跳过了懒惰的QHLG</span>
                     </div>
-
-                    <div id='index-page-description'>
-                        欢迎你来到这里,想来点什么?
+                    <div id='index-page-description' style={{ textAlign: "center"}}>
+                        欢迎来到我的小站!想来点什么?<br />本站已启用{openTime}
                     </div>
                     <div id='index-page-button-container'>
                         <div id='index-page-button'>
