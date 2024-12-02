@@ -128,12 +128,12 @@ const config = {
               },
               {
                 label: '狐狸的GitHub主页',
-                href: 'https://github.com/QHMT114514',
+                href: 'https://github.com/QHMY114514',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.`,
+        copyright: `Copyright ©${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.<br /><a href="https://icp.gov.moe/?keyword=20245009" target="_blank">萌ICP备20245009号</a>`,
       },
       prism: {
         theme: prismThemes.github,

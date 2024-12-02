@@ -84,12 +84,26 @@ div#index-page-button-container {
         font-size: 60px;
     }
 
+    div#index-page-main #logo span{
+        font-size: 0.5em;
+        }
+
     div#index-page-main #index-page-description {
-        font-size: 1.3em;
+        font-size: 1.1em;
+    }
+    div#index-page-main #index-page-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;  /* 设置为纵向排列 */
+        filter: drop-shadow(5px 5px 10px #000);
+        transition: all 0.2s;
+    }
+    
+    div#index-page-button-container {
+        display: flex;
+        flex-direction: column;  /* 设置为纵向排列 */
+        align-items: center;
     }
 
-    div#index-page-button-container {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
 }
