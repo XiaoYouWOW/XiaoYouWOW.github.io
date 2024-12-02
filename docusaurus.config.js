@@ -74,10 +74,14 @@ const config = {
         items: [
           {to: '/blog', label: '不准看这里', position: 'left'},
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            to: '/docs/intro',
             position: 'left',
             label: '可以看这里',
+          },
+          {
+            to: '/docs/jrrp',
+            label: '今日人品',
+            position: 'left',
           },
           {
             href: 'https://api.lolimi.cn/60/',
@@ -129,6 +133,23 @@ const config = {
               {
                 label: '狐狸的GitHub主页',
                 href: 'https://github.com/QHMY114514',
+              },
+            ],
+          },
+          {
+            title: '友情链接',
+            items: [
+              {
+                label: '户山兔兔的小站',
+                href: 'https://danieltoyama.fun',
+              },
+              {
+                label: 'YukieBot(by 户山兔兔)',
+                href: 'https://yukiebot.top',
+              },
+              {
+                label: '桑帛云API',
+                href: 'https://api.lolimi.cn',
               },
             ],
           },

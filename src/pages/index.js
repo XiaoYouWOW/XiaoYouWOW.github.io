@@ -39,15 +39,17 @@ export default function () {
 
     // 在组件挂载时选择背景图片
     useEffect(() => {
+        setOpenTime(TimetoText(new Date() - 1732948276347));
+        setLogoColor(`hsl(${(new Date() / 20) % 360},50%,70%)`);
         setInterval(() => {
             setLogoColor(`hsl(${(new Date() / 20) % 360},50%,70%)`);
         }, 33);
         setInterval(() => {
             setOpenTime(TimetoText(new Date() - 1732948276347));
-            function TimetoText(time) {
-                return `${Math.round(time / 864) / 100000}天`
-            }
         }, 1000);
+        function TimetoText(time) {
+            return `${Math.round(time / 864) / 100000}天`
+        }
 
         // 初始化时选择背景图片
         selectRandomBackgroundImage();

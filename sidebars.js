@@ -31,6 +31,7 @@ const sidebars = {
   
   tutorialSidebar: [
     'intro',
+    'jrrp',
     'game',
     {
       type: 'category',

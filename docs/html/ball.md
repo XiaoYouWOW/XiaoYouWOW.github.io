@@ -8,9 +8,20 @@ sidebar_position: 4
 
 可前往[我的个人群](https://qm.qq.com/q/bImTc3BPsA)下载HTML文件,请用电脑浏览器打开
 
-当前版本为 v8
+当前版本为 v9
 
 ## 更新日志
+
+- v9
+
+```
+更新于2024/12/2
+将基本帧率从120修改为125(其实实际上一直是125,只是把一些和帧率相关的变量修改了)
+修复了拔出手柄会爆破程序的问题
+增加了帧率显示
+增加了手柄精确操作的设置
+优化了显示算法
+```
 
 - v8(feat.[户山兔兔](https://danieltoyama.fun))
 
@@ -29,7 +40,7 @@ sidebar_position: 4
 ## 使用说明
 
 用来对照的一个小球模拟
-<iframe src="/ballsimulate.html" width="500px" height="500px"></iframe>
+<iframe src="/ballsimulate.html" width="525px" height="525px"></iframe>
 
 ### 状态面板
 
@@ -66,6 +77,7 @@ sidebar_position: 4
 - select 打开/关闭状态面板
 - start 暂停模拟
 - LB 重启模拟
+- RB 打开/关闭精确移动(普通移动是八向的,打开之后力度就会随手柄幅度变化)
 - LS↑↓←→ 移动
 
 #### 设置按键

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)https://qhmy114514-github-io.pages.dev/ballsimulate -->
 <html lang="zh-CN">
 
 <head>
@@ -463,54 +462,147 @@
 
     <script>
 
+        //版本号
+        const version = 9;
 
-        const version = 8;
-
+        //小球基本属性
         const ballradius = 50;
         const mapsize = [2100, 2100];
         const ballat = [1000, 1000];
-        const tickspeed = 120;
-        const gravity = [0, 12 / tickspeed];
+        const tickspeed = 125;
+        const gravity = [0, 12.5 / tickspeed];
 
-        const useraccvel = 24 / tickspeed;
-        const useraccdeb = 0 ** (1 / tickspeed);
+        //移动参数
+        const useraccvel = 25 / tickspeed;
+        const useraccdeb = 0 ** (1 / tickspeed); //这个不为0会导致移动松手加速度缓慢下降,影响手感,我也不知道为什么会写这个
 
+        //空气阻力
         const veldeb = 0.8 ** (1 / tickspeed);
+
+        // 定义每个按钮的冷却时间（单位：毫秒）
+        const buttonCooldowns = {
+            "up": { time: 0, cooldownTime: 200 },    // 向上按钮
+            "down": { time: 0, cooldownTime: 200 },  // 向下按钮
+            "left": { time: 0, cooldownTime: 200 },  // 向左按钮
+            "right": { time: 0, cooldownTime: 200 }, // 向右按钮
+            "x": { time: 0, cooldownTime: 400 },     // X按钮
+            "y": { time: 0, cooldownTime: 400 },     // Y按钮
+            "a": { time: 0, cooldownTime: 400 },     // A按钮
+            "b": { time: 0, cooldownTime: 400 },     // B按钮
+            "start": { time: 0, cooldownTime: 600 }, // 暂停按钮 (Start)
+            "select": { time: 0, cooldownTime: 600 },// 选择按钮 (Select)
+
+            // 添加肩部和扳机按钮
+            "l1": { time: 0, cooldownTime: 600 },    // L1按钮
+            "r1": { time: 0, cooldownTime: 600 },    // R1按钮
+            "l2": { time: 0, cooldownTime: 600 },    // L2按钮
+            "r2": { time: 0, cooldownTime: 600 },    // R2按钮
+        };
+        const cooldownTime = 100;
 
         var ballmap = document.getElementById("ballmap");
         var ctx = ballmap.getContext("2d");
 
-        var onLeft = false;
-        var onUp = false;
-        var onRight = false;
-        var onDown = false;
+        //控制检测
+        var onLeft;
+        var onUp;
+        var onRight;
+        var onDown;
 
-        var ballpos = [1050, 1050];
-        var ballshowpos = [1050, 1050];
-        var ballvel = [0, 0];
-        var ballacc = [0, 0];
-        var balldis = 0;
-        var ballspd = 0;
+        //小球物理量
+        var ballpos;
+        var ballshowpos;
+        var ballvel;
+        var ballacc;
+        var balldis;
+        var ballspd;
 
-        var ballposhis = [[1050, 1050]];
-        var framehis = [];
+        //显示用
+        var ballposhis; //球历史位置,用于画拖尾
+        var framehis; //帧生成时间
 
-        var useracc = [0, 0];
+        //移动加速度
+        var useracc;
 
-        var tick = 0;
-        var outrangetick = 0;
+        //精准加速度
+        var accpow;
 
-        var time = new Date();
+        //当前刻
+        var tick;
+        var outrangetick;
 
-        var nogravity = false;
-        var noairresistance = false;
-        var brownian = false;
-        var ingorewall = false;
-        var pause = false;
-        var showstate = true;
-        var colorfulball = true;
-        var trailing = true;
-        var power = 5;
+        //当前时间
+        var time;
+
+        //通用设置
+        var nogravity;
+        var noairresistance;
+        var brownian;
+        var ingorewall;
+        var pause;
+        var showstate;
+        var colorfulball;
+        var trailing;
+        var power;
+
+        //手柄设置
+        var accuratemove;
+
+        var gamepadIndex;
+
+        reset();
+
+        function reset() {
+            //控制检测
+            onLeft = false;
+            onUp = false;
+            onRight = false;
+            onDown = false;
+
+            //小球物理量
+            ballpos = [1050, 1050];
+            ballshowpos = [1050, 1050];
+            ballvel = [0, 0];
+            ballacc = [0, 0];
+            balldis = 0;
+            ballspd = 0;
+
+            //显示用
+            ballposhis = [[1050, 1050]];
+            framehis = [];
+
+            //移动加速度
+            useracc = [0, 0];
+
+            //精准加速度
+            accpow = [1, 1];
+
+            //当前刻
+            tick = 0;
+            outrangetick = 0;
+
+            //当前时间
+            time = Date.now();
+
+            //通用设置
+            nogravity = false;
+            noairresistance = false;
+            brownian = false;
+            ingorewall = false;
+            pause = false;
+            showstate = true;
+            colorfulball = true;
+            trailing = true;
+            power = 5;
+
+            //手柄设置
+            accuratemove = false;
+
+            gamepadIndex = null;
+
+            Draw();
+            return;
+        }
 
         setInterval(() => {
             // 监听gamepad输入
@@ -518,10 +610,13 @@
             checkGamepadMovement();
 
             if (!pause) {
-                tick++;
                 Draw();
                 Cal_move();
                 Cal_ball();
+                tick++;
+                framehis.unshift(Date.now() - time);
+                framehis = framehis.slice(0, 180);
+                time = Date.now();
             }
         }, 1000 / tickspeed);
 
@@ -533,10 +628,10 @@
                 ctx.fillStyle = "blue";
                 ctx.fillText(`Tick:${tick}`, 10, 50);
                 ctx.fillText(`pos:(${Math.round(ballpos[0] - 1050)},${Math.round(ballpos[1] - 1050)})`, 10, 110);
-                ctx.fillText(`vel:(${Math.round(ballvel[0] * 100 / 1.2)},${Math.round(ballvel[1] * 100 / 1.2)})`, 10, 170);
+                ctx.fillText(`vel:(${Math.round(ballvel[0] * 100 / 1.25)},${Math.round(ballvel[1] * 100 / 1.25)})`, 10, 170);
                 ctx.fillText(`acc:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
                 ctx.fillText(`dis:${Math.round(balldis * 100)}`, 10, 290);
-                ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.2)}`, 10, 350);
+                ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
                 ctx.fillStyle = "green";
                 ctx.textAlign = "right";
                 ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 50);
@@ -553,6 +648,9 @@
                 ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 350);
                 ctx.fillText(`Trailing:${trailing}`, 2090, 410);
                 ctx.fillText(`Pause:${pause}`, 2090, 470);
+                if (gamepadIndex != null) {
+                    ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 530);
+                }
                 if (gamepadIndex == null) {
                     ctx.font = "60px Consolas";
                     ctx.textAlign = "left";
@@ -569,15 +667,15 @@
                     ctx.fillText(`C - Colorful Ball`, 10, 2100 - 140);
                     ctx.fillText(`R - Air Resistance`, 10, 2100 - 80);
                     ctx.fillText(`B - Brownian Motion`, 10, 2100 - 20);
-
                 } else {
                     ctx.font = "60px Consolas";
                     ctx.textAlign = "left";
                     ctx.fillStyle = "goldenrod";
-                    ctx.fillText(`HOTKEY`, 10, 2100 - 680);
-                    ctx.fillText(`Select - State`, 10, 2100 - 620);
-                    ctx.fillText(`Start - Pause`, 10, 2100 - 560);
-                    ctx.fillText(`LB - Reposition`, 10, 2100 - 500);
+                    ctx.fillText(`HOTKEY`, 10, 2100 - 740);
+                    ctx.fillText(`Select/Back - State`, 10, 2100 - 680);
+                    ctx.fillText(`Start - Pause`, 10, 2100 - 620);
+                    ctx.fillText(`LB - Reposition`, 10, 2100 - 560);
+                    ctx.fillText(`RB - AccurateMove`, 10, 2100 - 500);
                     ctx.fillText(`↑↓ - Move Power`, 10, 2100 - 440);
                     ctx.fillText(`LS - Move`, 10, 2100 - 380);
                     ctx.fillText(`X - Gravity`, 10, 2100 - 320);
@@ -587,6 +685,27 @@
                     ctx.fillText(`LT - Trailing`, 10, 2100 - 80);
                     ctx.fillText(`RT - Colorful Ball`, 10, 2100 - 20);
                 }
+
+                ctx.lineWidth = 2;
+                ctx.rect(2100 - 901 - 30, 2100 - 160 - 30, 901, 160);
+                ctx.rect(2100 - 901 - 30, 2100 - 320 - 30, 901, 320);
+                ctx.stroke();
+
+                ctx.lineWidth = 0;
+                for (index in framehis) {
+                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 12 * framehis[index])},100%,40%)`;
+                    ctx.fillRect(2100 - 5 * index - 35, 2100 - 20 * framehis[index] - 30, 5, 20 * framehis[index]);
+                }
+
+                ctx.textAlign = "right";
+                //避免在0tick的时候NaN
+                let tot = 1e-10;
+                for (index in framehis) {
+                    tot += framehis[index];
+                }
+                ctx.fillStyle = `hsla(${Math.max(0, 2 * framehis.length * (1000 / tot) - 80)},100%,20%)`;
+                ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 360);
+
             }
             ctx.font = "128px Consolas";
             ctx.textAlign = "center";
@@ -595,6 +714,8 @@
             ctx.fillText("MADE BY QHLG", 1050, 1150);
             ctx.font = "80px Consolas";
             ctx.fillText("©2024 QHLG，All rights reserved.", 1050, 1035);
+
+
             for (let a = 19; a > 0 && trailing; a--) {
                 if (a >= ballposhis.length) continue;
                 ctx.beginPath();
@@ -625,20 +746,21 @@
             }
             ctx.arc(ballshowpos[0], ballshowpos[1], ballradius, 0, 2 * Math.PI);
             ctx.stroke();
+
         }
 
         function Cal_move() {
             if (onLeft) {
-                useracc[0] = -useraccvel / 5 * power;
+                useracc[0] = -useraccvel / 5 * power * accpow[0];
             }
             if (onUp) {
-                useracc[1] = -useraccvel / 5 * power;
+                useracc[1] = -useraccvel / 5 * power * accpow[1];
             }
             if (onRight) {
-                useracc[0] = useraccvel / 5 * power;
+                useracc[0] = useraccvel / 5 * power * accpow[0];
             }
             if (onDown) {
-                useracc[1] = useraccvel / 5 * power;
+                useracc[1] = useraccvel / 5 * power * accpow[1];
             }
             if (!onDown && !onLeft && !onUp && !onRight) {
                 useracc = [useracc[0] * useraccdeb, useracc[1] * useraccdeb];
@@ -710,9 +832,8 @@
                 ballvel = [ballvel[0] * veldeb, ballvel[1] * veldeb];
             }
             ballposhis.unshift(ballshowpos);
-            ballposhis.slice(0, 19);
+            ballposhis.slice(0, 20);
         }
-
 
         // 检查并处理手柄输入
 
@@ -726,192 +847,162 @@
                 }
             }
         }
-        let gamepadIndex = null;
-        // 定义每个按钮的冷却时间（单位：毫秒）
-        const buttonCooldowns = {
-            "up": { time: 0, cooldownTime: 200 },    // 向上按钮
-            "down": { time: 0, cooldownTime: 200 },  // 向下按钮
-            "left": { time: 0, cooldownTime: 200 },  // 向左按钮
-            "right": { time: 0, cooldownTime: 200 }, // 向右按钮
-            "x": { time: 0, cooldownTime: 200 },     // X按钮
-            "y": { time: 0, cooldownTime: 200 },     // Y按钮
-            "a": { time: 0, cooldownTime: 200 },     // A按钮
-            "b": { time: 0, cooldownTime: 200 },     // B按钮
-            "start": { time: 0, cooldownTime: 300 }, // 暂停按钮 (Start)
-            "select": { time: 0, cooldownTime: 300 },// 选择按钮 (Select)
 
-            // 添加肩部和扳机按钮
-            "l1": { time: 0, cooldownTime: 500 },    // L1按钮
-            "r1": { time: 0, cooldownTime: 500 },    // R1按钮
-            "l2": { time: 0, cooldownTime: 500 },    // L2按钮
-            "r2": { time: 0, cooldownTime: 500 },    // R2按钮
-        };
-        const cooldownTime = 100;
         // 检测摇杆输入
         function checkGamepadMovement() {
             if (gamepadIndex === null) return; // 如果没有检测到手柄，返回
 
-            const gamepad = navigator.getGamepads()[gamepadIndex];
+            try {
+                const gamepad = navigator.getGamepads()[gamepadIndex];
 
-            // 获取摇杆的X和Y轴值
-            const axisX = gamepad.axes[0]; // 左摇杆X轴
-            const axisY = gamepad.axes[1]; // 左摇杆Y轴
+                // 获取摇杆的X和Y轴值
+                const axisX = gamepad.axes[0]; // 左摇杆X轴
+                const axisY = gamepad.axes[1]; // 左摇杆Y轴
 
-            // 摇杆的阈值（可以根据需要调整）
-            const threshold = 0.3;
+                // 摇杆的阈值（可以根据需要调整）
+                const threshold = 0.2;
 
-            if (axisX < -threshold) {
-                goLeft(); // 摇杆向左
-            } else if (axisX > threshold) {
-                goRight(); // 摇杆向右
-            } else {
-                endLeft();
-                endRight(); // 摇杆处于中心位置时停止
-            }
+                if (!accuratemove) {
+                    if (axisX < -threshold) {
+                        goLeft(); // 摇杆向左
+                    } else if (axisX > threshold) {
+                        goRight(); // 摇杆向右
+                    } else {
+                        endLeft();
+                        endRight(); // 摇杆处于中心位置时停止
+                    }
 
-            if (axisY < -threshold) {
-                goUp(); // 摇杆向上
-            } else if (axisY > threshold) {
-                goDown(); // 摇杆向下
-            } else {
-                endUp();
-                endDown(); // 摇杆处于中心位置时停止
-            }
-            const currentTime = Date.now();
+                    if (axisY < -threshold) {
+                        goUp(); // 摇杆向上
+                    } else if (axisY > threshold) {
+                        goDown(); // 摇杆向下
+                    } else {
+                        endUp();
+                        endDown(); // 摇杆处于中心位置时停止
+                    }
+                } else {
+                    if (axisX < -threshold) {
+                        goLeft(1 - (1 + axisX) / (1 - threshold)); // 摇杆向左
+                    } else if (axisX > threshold) {
+                        goRight(1 - (1 - axisX) / (1 - threshold)); // 摇杆向右
+                    } else {
+                        goLeft(0);
+                        goRight(0);
+                        endLeft();
+                        endRight(); // 摇杆处于中心位置时停止
+                    }
 
-            if (gamepad.buttons[9].pressed) {
-                if (currentTime - buttonCooldowns["start"].time > buttonCooldowns["start"].cooldownTime) {
-                    pause = !pause;
-                    Draw();
-                    buttonCooldowns["start"].time = currentTime;
-                    console.log("Game paused");
-                }
-            }
-            if (gamepad.buttons[8].pressed) {
-                if (currentTime - buttonCooldowns["select"].time > buttonCooldowns["select"].cooldownTime) {
-                    showstate = !showstate;
-                    buttonCooldowns["select"].time = currentTime;
-                    console.log("Select button pressed");
-                }
-            }
-
-            // 确保冷却时间过后才能改变 power
-            // 检查 "向上" 按钮
-            if (gamepad.buttons[12].pressed) {
-                if (currentTime - buttonCooldowns["up"].time > buttonCooldowns["up"].cooldownTime) {
-                    power = power + 1;
-                    buttonCooldowns["up"].time = currentTime;
-                    console.log("Power increased to", power);
-                }
-            }
-
-            // 检查 "向下" 按钮
-            if (gamepad.buttons[13].pressed) {
-                if (currentTime - buttonCooldowns["down"].time > buttonCooldowns["down"].cooldownTime) {
-                    power = power - 1;
-                    buttonCooldowns["down"].time = currentTime;
-                    console.log("Power decreased to", power);
-                }
-            }
-            //"x"
-            if (gamepad.buttons[2].pressed) {
-                if (currentTime - buttonCooldowns["x"].time > buttonCooldowns["x"].cooldownTime) {
-                    nogravity = !nogravity;
-                    Draw();
-                    buttonCooldowns["x"].time = currentTime;
+                    if (axisY < -threshold) {
+                        goUp(1 - (1 + axisY) / (1 - threshold)); // 摇杆向上
+                    } else if (axisY > threshold) {
+                        goDown(1 - (1 - axisY) / (1 - threshold)); // 摇杆向下
+                    } else {
+                        goUp(0);
+                        goDown(0);
+                        endUp();
+                        endDown(); // 摇杆处于中心位置时停止
+                    }
                 }
 
-            }
-            //"Y"
-            if (gamepad.buttons[3].pressed) {
-                if (currentTime - buttonCooldowns["y"].time > buttonCooldowns["y"].cooldownTime) {
-                    ingorewall = !ingorewall;
-                    Draw();
-                    buttonCooldowns["y"].time = currentTime;
-                    console.log("Y button pressed");
+                if (gamepad.buttons[9].pressed) {
+                    if (time - buttonCooldowns["start"].time > buttonCooldowns["start"].cooldownTime) {
+                        pause = !pause;
+                        Draw();
+                        buttonCooldowns["start"].time = time;
+                    }
                 }
-            }
-            //"A"
-            if (gamepad.buttons[0].pressed) {
-                if (currentTime - buttonCooldowns["a"].time > buttonCooldowns["a"].cooldownTime) {
-                    noairresistance = !noairresistance;
-                    Draw();
-                    buttonCooldowns["a"].time = currentTime;
-                    console.log("A button pressed");
+                if (gamepad.buttons[8].pressed) {
+                    if (time - buttonCooldowns["select"].time > buttonCooldowns["select"].cooldownTime) {
+                        showstate = !showstate;
+                        buttonCooldowns["select"].time = time;
+                    }
                 }
-            }
-            //"B"
-            if (gamepad.buttons[1].pressed) {
-                if (currentTime - buttonCooldowns["b"].time > buttonCooldowns["b"].cooldownTime) {
-                    brownian = !brownian;
-                    Draw();
-                    buttonCooldowns["b"].time = currentTime;
-                    console.log("B button pressed");
+
+                // 确保冷却时间过后才能改变 power
+                // 检查 "向上" 按钮
+                if (gamepad.buttons[12].pressed) {
+                    if (time - buttonCooldowns["up"].time > buttonCooldowns["up"].cooldownTime) {
+                        power = power + 1;
+                        buttonCooldowns["up"].time = time;
+                    }
                 }
-            }
-            // 检查 "L1" 按钮
-            if (gamepad.buttons[4].pressed) {
-                if (currentTime - buttonCooldowns["l1"].time > buttonCooldowns["l1"].cooldownTime) {
-                    onLeft = false;
-                    onUp = false;
-                    onRight = false;
-                    onDown = false;
 
-                    ballpos = [1050, 1050];
-                    ballshowpos = [1050, 1050];
-                    ballvel = [0, 0];
-                    ballacc = [0, 0];
-                    balldis = 0;
-                    ballspd = 0;
-
-                    ballposhis = [[1050, 1050]];
-
-                    useracc = [0, 0];
-
-                    tick = 0;
-                    outrangetick = 0;
-
-                    nogravity = false;
-                    noairresistance = false;
-                    brownian = false;
-                    ingorewall = false;
-                    pause = false;
-                    showstate = true;
-                    colorfulball = true;
-                    trailing = true;
-                    power = 5;
-                    Draw();
-                    return;
-                    buttonCooldowns["l1"].time = currentTime;
-                    console.log("L1 button pressed");
+                // 检查 "向下" 按钮
+                if (gamepad.buttons[13].pressed) {
+                    if (time - buttonCooldowns["down"].time > buttonCooldowns["down"].cooldownTime) {
+                        power = power - 1;
+                        buttonCooldowns["down"].time = time;
+                    }
                 }
-            }
-            // 检查 "L2" 按钮
-            if (gamepad.buttons[6].pressed) {
-                if (currentTime - buttonCooldowns["l2"].time > buttonCooldowns["l2"].cooldownTime) {
-                    trailing = !trailing;
-                    Draw();
-                    buttonCooldowns["l2"].time = currentTime;
-                    console.log("L2 button pressed");
-                }
-            }
-            // 检查 "R1" 按钮
-            if (gamepad.buttons[5].pressed) {
-                if (currentTime - buttonCooldowns["r1"].time > buttonCooldowns["r1"].cooldownTime) {
-                    colorfulball = !colorfulball;
-                    Draw();
-                    buttonCooldowns["r1"].time = currentTime;
-                    console.log("R1 button pressed");
-                }
-            }
+                //"x"
+                if (gamepad.buttons[2].pressed) {
+                    if (time - buttonCooldowns["x"].time > buttonCooldowns["x"].cooldownTime) {
+                        nogravity = !nogravity;
+                        Draw();
+                        buttonCooldowns["x"].time = time;
+                    }
 
+                }
+                //"Y"
+                if (gamepad.buttons[3].pressed) {
+                    if (time - buttonCooldowns["y"].time > buttonCooldowns["y"].cooldownTime) {
+                        ingorewall = !ingorewall;
+                        Draw();
+                        buttonCooldowns["y"].time = time;
+                    }
+                }
+                //"A"
+                if (gamepad.buttons[0].pressed) {
+                    if (time - buttonCooldowns["a"].time > buttonCooldowns["a"].cooldownTime) {
+                        noairresistance = !noairresistance;
+                        Draw();
+                        buttonCooldowns["a"].time = time;
+                    }
+                }
+                //"B"
+                if (gamepad.buttons[1].pressed) {
+                    if (time - buttonCooldowns["b"].time > buttonCooldowns["b"].cooldownTime) {
+                        brownian = !brownian;
+                        Draw();
+                        buttonCooldowns["b"].time = time;
+                    }
+                }
+                // 检查 "L1" 按钮
+                if (gamepad.buttons[4].pressed) {
+                    if (time - buttonCooldowns["l1"].time > buttonCooldowns["l1"].cooldownTime) {
+                        buttonCooldowns["l1"].time = time;
+                    }
+                }
+                // 检查 "L2" 按钮
+                if (gamepad.buttons[6].pressed) {
+                    if (time - buttonCooldowns["l2"].time > buttonCooldowns["l2"].cooldownTime) {
+                        trailing = !trailing;
+                        Draw();
+                        buttonCooldowns["l2"].time = time;
+                    }
+                }
+                // 检查 "R1" 按钮
+                if (gamepad.buttons[5].pressed) {
+                    if (time - buttonCooldowns["r1"].time > buttonCooldowns["r1"].cooldownTime) {
+                        colorfulball = !colorfulball;
+                        Draw();
+                        buttonCooldowns["r1"].time = time;
+                    }
+                }
+                // 检查 "R2" 按钮
+                if (gamepad.buttons[7].pressed) {
+                    if (time - buttonCooldowns["r2"].time > buttonCooldowns["r2"].cooldownTime) {
+                        accuratemove = !accuratemove;
+                        buttonCooldowns["r2"].time = time;
+                    }
+                }
+            } catch {
+                gamepadIndex = null;
+            }
 
         }
 
-
-
-
-
+        //检查键盘输入
         window.onkeydown = (e) => {
             if (e.keyCode == 48) {
                 power = 10;
@@ -969,35 +1060,7 @@
                     Draw();
                     return;
                 case 77:
-                    onLeft = false;
-                    onUp = false;
-                    onRight = false;
-                    onDown = false;
-
-                    ballpos = [1050, 1050];
-                    ballshowpos = [1050, 1050];
-                    ballvel = [0, 0];
-                    ballacc = [0, 0];
-                    balldis = 0;
-                    ballspd = 0;
-
-                    ballposhis = [[1050, 1050]];
-
-                    useracc = [0, 0];
-
-                    tick = 0;
-                    outrangetick = 0;
-
-                    nogravity = false;
-                    noairresistance = false;
-                    brownian = false;
-                    ingorewall = false;
-                    pause = false;
-                    showstate = true;
-                    colorfulball = true;
-                    trailing = true;
-                    power = 5;
-                    Draw();
+                    reset();
                     return;
             }
         }
@@ -1019,24 +1082,44 @@
             }
         }
 
-        function goLeft() {
+        function goLeft(pow) {
+            if (typeof pow != 'undefined') {
+                accpow[0] = Math.min(1, pow);
+            } else {
+                pow = 1;
+            }
             if (!onLeft && !onRight) {
                 onLeft = true;
             }
         }
 
-        function goUp() {
+        function goUp(pow) {
+            if (typeof pow != 'undefined') {
+                accpow[1] = Math.min(1, pow);
+            } else {
+                pow = 1;
+            }
             if (!onUp && !onDown) {
                 onUp = true;
             }
         }
 
-        function goRight() {
+        function goRight(pow) {
+            if (typeof pow != 'undefined') {
+                accpow[0] = Math.min(1, pow);
+            } else {
+                pow = 1;
+            }
             if (!onRight && !onLeft) {
                 onRight = true;
             }
         }
-        function goDown() {
+        function goDown(pow) {
+            if (typeof pow != 'undefined') {
+                accpow[1] = Math.min(1, pow);
+            } else {
+                pow = 1;
+            }
             if (!onDown && !onUp) {
                 onDown = true;
             }
@@ -1058,6 +1141,7 @@
         function endDown() {
             onDown = false;
         }
+
 
     </script>
 
