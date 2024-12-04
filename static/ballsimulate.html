@@ -463,21 +463,22 @@
     <script>
 
         //版本号
-        const version = 9;
+        const version = 10;
 
         //小球基本属性
         const ballradius = 50;
         const mapsize = [2100, 2100];
         const ballat = [1000, 1000];
-        const tickspeed = 125;
-        const gravity = [0, 12.5 / tickspeed];
+        const tickspeed = [1, 5, 10, 25, 50, 90, 125, 200, 333, 500, 1000];
+        const gravity = [0, .1];
 
         //移动参数
-        const useraccvel = 25 / tickspeed;
-        const useraccdeb = 0 ** (1 / tickspeed); //这个不为0会导致移动松手加速度缓慢下降,影响手感,我也不知道为什么会写这个
+        const useraccvel = .2;
+        const useraccdeb = 0 ** (.008); //这个不为0会导致移动松手加速度缓慢下降,影响手感,我也不知道为什么会写这个
 
         //空气阻力
-        const veldeb = 0.8 ** (1 / tickspeed);
+        const veldeb = 0.8 ** (.008);
+
 
         // 定义每个按钮的冷却时间（单位：毫秒）
         const buttonCooldowns = {
@@ -502,6 +503,9 @@
 
         var ballmap = document.getElementById("ballmap");
         var ctx = ballmap.getContext("2d");
+
+        //时间流速
+        var timespeed;
 
         //控制检测
         var onLeft;
@@ -553,6 +557,9 @@
         reset();
 
         function reset() {
+            //时间流速
+            timespeed = 6;
+
             //控制检测
             onLeft = false;
             onUp = false;
@@ -604,26 +611,60 @@
             return;
         }
 
-        setInterval(() => {
-            // 监听gamepad输入
-            detectGamepad();
-            checkGamepadMovement();
+        var mainClock;
+        function setMainClock() {
+            mainClock = setInterval(main, 1000 / tickspeed[timespeed]);
+            function main() {
+                // 监听gamepad输入
+                detectGamepad();
+                checkGamepadMovement();
 
-            if (!pause) {
-                Draw();
-                Cal_move();
-                Cal_ball();
-                tick++;
-                framehis.unshift(Date.now() - time);
-                framehis = framehis.slice(0, 180);
-                time = Date.now();
+                if (!pause) {
+                    Draw();
+                    Cal_move();
+                    Cal_ball();
+                    tick++;
+                    framehis.unshift(Date.now() - time);
+                    framehis = framehis.slice(0, 180);
+                    time = Date.now();
+                }
             }
-        }, 1000 / tickspeed);
+        }
+        function unsetMainClock() {
+            clearInterval(mainClock);
+        }
+
+        setMainClock();
 
         function Draw() {
             ctx.clearRect(0, 0, ...mapsize);
             if (showstate) {
                 ctx.font = "60px Consolas";
+                
+                ctx.lineWidth = 2;
+                ctx.rect(2100 - 901 - 30, 2100 - 240 - 30, 901, 240);
+                ctx.rect(2100 - 901 - 30, 2100 - 480 - 30, 901, 480);
+                ctx.rect(2100 - 901 - 30, 2100 - 720 - 30, 901, 720);
+                ctx.stroke();
+
+                ctx.lineWidth = 0;
+                for (index in framehis) {
+                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 12 * framehis[index] / 125 * tickspeed[timespeed])},100%,40%)`;
+                    ctx.fillRect(2100 - 5 * index - 35, 2100 - 30 * framehis[index] / 125 * tickspeed[timespeed] - 30, 5,30 * framehis[index] / 125 * tickspeed[timespeed]);
+                }
+
+                ctx.fillStyle = "#000";
+                ctx.textAlign = "right";
+                //避免在0tick的时候NaN
+                let tot = 1e-10;
+                for (index in framehis) {
+                    tot += framehis[index];
+                }
+                ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 720 - 40);
+
+                ctx.textAlign = "left";
+                ctx.fillText(`Spd ${Math.round(100000 * (framehis.length / tot / 125)) / 100}x`, 2100 - 901 - 30, 2100 - 720 - 40);
+
                 ctx.textAlign = "left";
                 ctx.fillStyle = "blue";
                 ctx.fillText(`Tick:${tick}`, 10, 50);
@@ -634,31 +675,33 @@
                 ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
                 ctx.fillStyle = "green";
                 ctx.textAlign = "right";
-                ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 50);
+                ctx.fillText(`TimeSpeed:${timespeed}(${tickspeed[timespeed]}tps)`, 2090, 50);
+                ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 110);
                 if (brownian) {
                     ctx.fillStyle = "red";
                 } else {
                     ctx.fillStyle = "green";
                 }
-                ctx.fillText(`AirResistance:${brownian || !noairresistance}`, 2090, 110);
-                ctx.fillText(`Gravity:${!brownian && !nogravity}`, 2090, 170);
+                ctx.fillText(`AirResistance:${brownian || !noairresistance}`, 2090, 170);
+                ctx.fillText(`Gravity:${!brownian && !nogravity}`, 2090, 230);
                 ctx.fillStyle = "green";
-                ctx.fillText(`BrownianMotion:${brownian}`, 2090, 230);
-                ctx.fillText(`ColorfulBall:${colorfulball}`, 2090, 290);
-                ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 350);
-                ctx.fillText(`Trailing:${trailing}`, 2090, 410);
-                ctx.fillText(`Pause:${pause}`, 2090, 470);
+                ctx.fillText(`BrownianMotion:${brownian}`, 2090, 290);
+                ctx.fillText(`ColorfulBall:${colorfulball}`, 2090, 350);
+                ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 410);
+                ctx.fillText(`Trailing:${trailing}`, 2090, 470);
+                ctx.fillText(`Pause:${pause}`, 2090, 530);
                 if (gamepadIndex != null) {
-                    ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 530);
+                    ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 590);
                 }
                 if (gamepadIndex == null) {
                     ctx.font = "60px Consolas";
                     ctx.textAlign = "left";
                     ctx.fillStyle = "goldenrod";
-                    ctx.fillText(`HOTKEY`, 10, 2100 - 680);
-                    ctx.fillText(`F - State`, 10, 2100 - 620);
-                    ctx.fillText(`P - Pause`, 10, 2100 - 560);
-                    ctx.fillText(`M - Reposition`, 10, 2100 - 500);
+                    ctx.fillText(`HOTKEY`, 10, 2100 - 740);
+                    ctx.fillText(`F - State`, 10, 2100 - 680);
+                    ctx.fillText(`P - Pause`, 10, 2100 - 620);
+                    ctx.fillText(`M - Reposition`, 10, 2100 - 560);
+                    ctx.fillText(`+/- - Time Speed`, 10, 2100 - 500);
                     ctx.fillText(`0~9 - Move Power`, 10, 2100 - 440);
                     ctx.fillText(`↑↓←→/WASD - Move`, 10, 2100 - 380);
                     ctx.fillText(`G - Gravity`, 10, 2100 - 320);
@@ -671,11 +714,12 @@
                     ctx.font = "60px Consolas";
                     ctx.textAlign = "left";
                     ctx.fillStyle = "goldenrod";
-                    ctx.fillText(`HOTKEY`, 10, 2100 - 740);
-                    ctx.fillText(`Select/Back - State`, 10, 2100 - 680);
-                    ctx.fillText(`Start - Pause`, 10, 2100 - 620);
-                    ctx.fillText(`LB - Reposition`, 10, 2100 - 560);
-                    ctx.fillText(`RB - AccurateMove`, 10, 2100 - 500);
+                    ctx.fillText(`HOTKEY`, 10, 2100 - 800);
+                    ctx.fillText(`Select/Back - State`, 10, 2100 - 740);
+                    ctx.fillText(`Start - Pause`, 10, 2100 - 680);
+                    ctx.fillText(`LB - Reposition`, 10, 2100 - 620);
+                    ctx.fillText(`RB - AccurateMove`, 10, 2100 - 560);
+                    ctx.fillText(`←→ - Time Speed`, 10, 2100 - 500);
                     ctx.fillText(`↑↓ - Move Power`, 10, 2100 - 440);
                     ctx.fillText(`LS - Move`, 10, 2100 - 380);
                     ctx.fillText(`X - Gravity`, 10, 2100 - 320);
@@ -686,25 +730,6 @@
                     ctx.fillText(`RT - Colorful Ball`, 10, 2100 - 20);
                 }
 
-                ctx.lineWidth = 2;
-                ctx.rect(2100 - 901 - 30, 2100 - 160 - 30, 901, 160);
-                ctx.rect(2100 - 901 - 30, 2100 - 320 - 30, 901, 320);
-                ctx.stroke();
-
-                ctx.lineWidth = 0;
-                for (index in framehis) {
-                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 12 * framehis[index])},100%,40%)`;
-                    ctx.fillRect(2100 - 5 * index - 35, 2100 - 20 * framehis[index] - 30, 5, 20 * framehis[index]);
-                }
-
-                ctx.textAlign = "right";
-                //避免在0tick的时候NaN
-                let tot = 1e-10;
-                for (index in framehis) {
-                    tot += framehis[index];
-                }
-                ctx.fillStyle = `hsla(${Math.max(0, 2 * framehis.length * (1000 / tot) - 80)},100%,20%)`;
-                ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 360);
 
             }
             ctx.font = "128px Consolas";
@@ -864,18 +889,18 @@
 
                 if (!accuratemove) {
                     if (axisX < -threshold) {
-                        goLeft(); // 摇杆向左
+                        goLeft(1); // 摇杆向左
                     } else if (axisX > threshold) {
-                        goRight(); // 摇杆向右
+                        goRight(1); // 摇杆向右
                     } else {
                         endLeft();
                         endRight(); // 摇杆处于中心位置时停止
                     }
 
                     if (axisY < -threshold) {
-                        goUp(); // 摇杆向上
+                        goUp(1); // 摇杆向上
                     } else if (axisY > threshold) {
-                        goDown(); // 摇杆向下
+                        goDown(1); // 摇杆向下
                     } else {
                         endUp();
                         endDown(); // 摇杆处于中心位置时停止
@@ -914,6 +939,7 @@
                 if (gamepad.buttons[8].pressed) {
                     if (time - buttonCooldowns["select"].time > buttonCooldowns["select"].cooldownTime) {
                         showstate = !showstate;
+                        Draw();
                         buttonCooldowns["select"].time = time;
                     }
                 }
@@ -923,15 +949,39 @@
                 if (gamepad.buttons[12].pressed) {
                     if (time - buttonCooldowns["up"].time > buttonCooldowns["up"].cooldownTime) {
                         power = power + 1;
+                        Draw();
                         buttonCooldowns["up"].time = time;
                     }
                 }
-
                 // 检查 "向下" 按钮
                 if (gamepad.buttons[13].pressed) {
                     if (time - buttonCooldowns["down"].time > buttonCooldowns["down"].cooldownTime) {
                         power = power - 1;
+                        Draw();
                         buttonCooldowns["down"].time = time;
+                    }
+                }
+                // 检查 "向左" 按钮
+                if (gamepad.buttons[12].pressed) {
+                    if (time - buttonCooldowns["left"].time > buttonCooldowns["left"].cooldownTime) {
+                        timespeed++;
+                        if (timespeed > 10) timespeed--;
+                        unsetMainClock();
+                        setMainClock();
+                        Draw();
+                        buttonCooldowns["left"].time = time;
+                    }
+                }
+
+                // 检查 "向右" 按钮
+                if (gamepad.buttons[13].pressed) {
+                    if (time - buttonCooldowns["right"].time > buttonCooldowns["right"].cooldownTime) {
+                        timespeed--;
+                        if (timespeed < 0) timespeed++;
+                        unsetMainClock();
+                        setMainClock();
+                        Draw();
+                        buttonCooldowns["right"].time = time;
                     }
                 }
                 //"x"
@@ -970,6 +1020,8 @@
                 // 检查 "L1" 按钮
                 if (gamepad.buttons[4].pressed) {
                     if (time - buttonCooldowns["l1"].time > buttonCooldowns["l1"].cooldownTime) {
+                        reset();
+                        Draw();
                         buttonCooldowns["l1"].time = time;
                     }
                 }
@@ -993,6 +1045,7 @@
                 if (gamepad.buttons[7].pressed) {
                     if (time - buttonCooldowns["r2"].time > buttonCooldowns["r2"].cooldownTime) {
                         accuratemove = !accuratemove;
+                        Draw();
                         buttonCooldowns["r2"].time = time;
                     }
                 }
@@ -1016,16 +1069,16 @@
             }
             switch (e.keyCode) {
                 case 37: case 65:
-                    goLeft();
+                    goLeft(1);
                     return;
                 case 38: case 87:
-                    goUp();
+                    goUp(1);
                     return;
                 case 39: case 68:
-                    goRight();
+                    goRight(1);
                     return;
                 case 40: case 83:
-                    goDown();
+                    goDown(1);
                     return;
                 case 71:
                     nogravity = !nogravity;
@@ -1061,6 +1114,21 @@
                     return;
                 case 77:
                     reset();
+                    Draw();
+                    return;
+                case 190:
+                    timespeed += 1;
+                    if (timespeed > 10) timespeed -= 1;
+                    unsetMainClock();
+                    setMainClock();
+                    Draw();
+                    return;
+                case 188:
+                    timespeed -= 1;
+                    if (timespeed < 0) timespeed += 1;
+                    unsetMainClock();
+                    setMainClock();
+                    Draw();
                     return;
             }
         }
@@ -1086,7 +1154,7 @@
             if (typeof pow != 'undefined') {
                 accpow[0] = Math.min(1, pow);
             } else {
-                pow = 1;
+                accpow[0] = 1;
             }
             if (!onLeft && !onRight) {
                 onLeft = true;
@@ -1097,7 +1165,7 @@
             if (typeof pow != 'undefined') {
                 accpow[1] = Math.min(1, pow);
             } else {
-                pow = 1;
+                accpow[1] = 1;
             }
             if (!onUp && !onDown) {
                 onUp = true;
@@ -1108,7 +1176,7 @@
             if (typeof pow != 'undefined') {
                 accpow[0] = Math.min(1, pow);
             } else {
-                pow = 1;
+                accpow[0] = 1;
             }
             if (!onRight && !onLeft) {
                 onRight = true;
@@ -1118,7 +1186,7 @@
             if (typeof pow != 'undefined') {
                 accpow[1] = Math.min(1, pow);
             } else {
-                pow = 1;
+                accpow[1] = 1;
             }
             if (!onDown && !onUp) {
                 onDown = true;
