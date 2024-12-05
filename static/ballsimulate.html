@@ -463,13 +463,13 @@
     <script>
 
         //版本号
-        const version = 10;
+        const version = 11;
 
         //小球基本属性
         const ballradius = 50;
         const mapsize = [2100, 2100];
         const ballat = [1000, 1000];
-        const tickspeed = [1, 5, 10, 25, 50, 90, 125, 200, 333, 500, 1000];
+        const tickspeed = [1000, 200, 100, 40, 20, 11, 8, 5, 3, 2, 1];
         const gravity = [0, .1];
 
         //移动参数
@@ -554,6 +554,8 @@
 
         var gamepadIndex;
 
+        var mainClock;
+
         reset();
 
         function reset() {
@@ -606,14 +608,16 @@
             accuratemove = false;
 
             gamepadIndex = null;
+            
+            unsetMainClock()
+            setMainClock();
 
             Draw();
             return;
         }
 
-        var mainClock;
         function setMainClock() {
-            mainClock = setInterval(main, 1000 / tickspeed[timespeed]);
+            mainClock = setInterval(main, tickspeed[timespeed]);
             function main() {
                 // 监听gamepad输入
                 detectGamepad();
@@ -634,8 +638,6 @@
             clearInterval(mainClock);
         }
 
-        setMainClock();
-
         function Draw() {
             ctx.clearRect(0, 0, ...mapsize);
             if (showstate) {
@@ -649,8 +651,8 @@
 
                 ctx.lineWidth = 0;
                 for (index in framehis) {
-                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 12 * framehis[index] / 125 * tickspeed[timespeed])},100%,40%)`;
-                    ctx.fillRect(2100 - 5 * index - 35, 2100 - 30 * framehis[index] / 125 * tickspeed[timespeed] - 30, 5,30 * framehis[index] / 125 * tickspeed[timespeed]);
+                    ctx.fillStyle = `hsla(${Math.max(0, 180 - 12 * framehis[index] * 8 / tickspeed[timespeed])},100%,40%)`;
+                    ctx.fillRect(2100 - 5 * index - 35, 2100 - 30 * framehis[index] * 8 / tickspeed[timespeed] - 30, 5,30 * framehis[index] * 8 / tickspeed[timespeed]);
                 }
 
                 ctx.fillStyle = "#000";
@@ -663,7 +665,7 @@
                 ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 720 - 40);
 
                 ctx.textAlign = "left";
-                ctx.fillText(`Spd ${Math.round(100000 * (framehis.length / tot / 125)) / 100}x`, 2100 - 901 - 30, 2100 - 720 - 40);
+                ctx.fillText(`mspt ${Math.round(10 * tot / framehis.length) / 10}`, 2100 - 901 - 30, 2100 - 720 - 40);
 
                 ctx.textAlign = "left";
                 ctx.fillStyle = "blue";
@@ -673,9 +675,11 @@
                 ctx.fillText(`acc:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
                 ctx.fillText(`dis:${Math.round(balldis * 100)}`, 10, 290);
                 ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
+
+
                 ctx.fillStyle = "green";
                 ctx.textAlign = "right";
-                ctx.fillText(`TimeSpeed:${timespeed}(${tickspeed[timespeed]}tps)`, 2090, 50);
+                ctx.fillText(`TimeSpeed:${timespeed}(${tickspeed[timespeed]}mspt)`, 2090, 50);
                 ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 110);
                 if (brownian) {
                     ctx.fillStyle = "red";
@@ -693,6 +697,8 @@
                 if (gamepadIndex != null) {
                     ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 590);
                 }
+
+
                 if (gamepadIndex == null) {
                     ctx.font = "60px Consolas";
                     ctx.textAlign = "left";
@@ -729,16 +735,16 @@
                     ctx.fillText(`LT - Trailing`, 10, 2100 - 80);
                     ctx.fillText(`RT - Colorful Ball`, 10, 2100 - 20);
                 }
-
-
             }
+
+
             ctx.font = "128px Consolas";
             ctx.textAlign = "center";
             ctx.fillStyle = "#CCCCCC";
             ctx.fillText(`BALL SIMULATE v${version}`, 1050, 950);
             ctx.fillText("MADE BY QHLG", 1050, 1150);
             ctx.font = "80px Consolas";
-            ctx.fillText("©2024 QHLG，All rights reserved.", 1050, 1035);
+            ctx.fillText("©2024 QHLG, All rights reserved.", 1050, 1035);
 
 
             for (let a = 19; a > 0 && trailing; a--) {

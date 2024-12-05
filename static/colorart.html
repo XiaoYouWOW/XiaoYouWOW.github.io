@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>web</title>
+</head>
+
+<body>
+    <div id="main" class="map">
+        <canvas id="map" class="map" width="1000" height="1000"></canvas>
+    </div>
+</body>
+
+<style>
+    html,
+    body {
+        background-color: #222;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    div.map {
+        height: calc(min(95vh, 95vw));
+        margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
+        background-color: #fff;
+    }
+
+    canvas.map {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+
+<script>
+    var ballmap = document.getElementById("map");
+    var ctx = ballmap.getContext("2d");
+
+    var size = 1000;
+    var pos = [size / 2, size / 2];
+
+    ctx.fillStyle = "#888"
+    ctx.fillRect(0,0,size,size);
+    for (i = 0; i < 5000 * 360; i++) {
+        ctx.beginPath();
+        //ctx.strokeStyle = '#0080FF40';
+        ctx.strokeStyle = `hsla(${i / 100 % 360},100%,50%,20%)`;
+        ctx.moveTo(pos[0], pos[1]);
+        move();
+        ctx.lineTo(pos[0], pos[1]);
+        ctx.stroke();
+    }
+
+    function move() {
+        for (index in pos) {
+            pos[index] += randomStep();
+            if (pos[index] > size) {
+                pos[index] = pos[index] - (pos[index] - size);
+            }
+            if (pos[index] < 0) {
+                pos[index] = -pos[index];
+            }
+        }
+
+        function randomStep() {
+            return (Math.random() > .5 ? 1 : -1) * 10 * Math.random();
+        }
+    }
+</script>
