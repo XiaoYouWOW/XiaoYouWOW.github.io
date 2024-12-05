@@ -106,6 +106,7 @@ export default function () {
                     </div>
                 </div>
             </div>
+            <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "83e661b0d0b74b4eb1f798f1af124003"}'></script>
         </Layout>
     );
 }
