@@ -4,7 +4,7 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -51,7 +51,7 @@ const config = {
           blogSidebarTitle: '乾狐离光的日记本',
           blogSidebarCount: 10,
           showReadingTime: true,
-          
+
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -72,7 +72,7 @@ const config = {
           src: 'img/logo.svg',
         },
         items: [
-          {to: '/blog', label: '不准看这里', position: 'left'},
+          { to: '/blog', label: '不准看这里', position: 'left' },
           {
             to: '/docs/intro',
             position: 'left',
@@ -163,15 +163,12 @@ const config = {
     }),
   // Add the Cloudflare Web Analytics script
   scripts: [
-    /* 
     {
       src: 'https://static.cloudflareinsights.com/beacon.min.js',
       async: true,
-      'data-cf-beacon': '{"token": "13480125097f45c28e430dbbf132f100"}',
-    }, 
-    */
+      'data-cf-beacon': '{"token": "83e661b0d0b74b4eb1f798f1af124003"}',
+    },
   ],
 };
-
 
 export default config;
