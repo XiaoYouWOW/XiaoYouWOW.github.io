@@ -3,12 +3,12 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>web</title>
+    <title>抽象艺术</title>
 </head>
 
 <body>
     <div id="main" class="map">
-        <canvas id="map" class="map" width="1000" height="1000"></canvas>
+        <canvas id="map" class="map" width="1024" height="1024"></canvas>
     </div>
 </body>
 
@@ -36,34 +36,118 @@
     var ballmap = document.getElementById("map");
     var ctx = ballmap.getContext("2d");
 
-    var size = 1000;
-    var pos = [size / 2, size / 2];
+    var size = 1024;
 
-    ctx.fillStyle = "#888"
-    ctx.fillRect(0,0,size,size);
-    for (i = 0; i < 5000 * 360; i++) {
-        ctx.beginPath();
-        //ctx.strokeStyle = '#0080FF40';
-        ctx.strokeStyle = `hsla(${i / 100 % 360},100%,50%,20%)`;
-        ctx.moveTo(pos[0], pos[1]);
-        move();
-        ctx.lineTo(pos[0], pos[1]);
-        ctx.stroke();
-    }
+    let map = prompt("请选择模式\n0 - 星云轨迹\n1 - 几何之美\n2 - 涟漪旋涡", 0)
 
-    function move() {
-        for (index in pos) {
-            pos[index] += randomStep();
-            if (pos[index] > size) {
-                pos[index] = pos[index] - (pos[index] - size);
+    if (map == 0) {
+        let pos = [size / 2, size / 2];
+        let len;
+        let count = 0;
+
+        while (typeof len != "number" || len <= 0 && count < 5) {
+            len = parseFloat(prompt("输入路径长度\n路径长度必须是大于0的数字,路径长度越大生成时间越久,路径长度越小涂色越少\n画面在40以上之后基本饱和", 25));
+            count++;
+        }
+
+        if (count == 5) {
+            len = 25;
+        }
+
+        ctx.fillStyle = "#000"
+        ctx.fillRect(0, 0, size, size);
+        for (i = 0; i < len * 100 * 360; i++) {
+            ctx.beginPath();
+            //ctx.strokeStyle = '#0080FF40';
+            ctx.strokeStyle = `hsla(${i / 100 % 360},100%,50%,20%)`;
+            ctx.moveTo(pos[0], pos[1]);
+            move();
+            ctx.lineTo(pos[0], pos[1]);
+            ctx.stroke();
+        }
+
+        function move() {
+            for (index in pos) {
+                pos[index] += randomStep();
+                if (pos[index] > size) {
+                    pos[index] = pos[index] - (pos[index] - size);
+                }
+                if (pos[index] < 0) {
+                    pos[index] = -pos[index];
+                }
             }
-            if (pos[index] < 0) {
-                pos[index] = -pos[index];
+
+            function randomStep() {
+                return (Math.random() > .5 ? 1 : -1) * 10 * Math.random();
+            }
+        }
+    } else if (map == 1) {
+        let time = Date.now();
+        let mode = [Math.floor(8 * Math.random()), Math.floor(8 * Math.random()), Math.floor(8 * Math.random())];
+
+        for (i = 0; i < size; i++) {
+            for (j = 0; j < size; j++) {
+                ctx.fillStyle = `rgb(${Cal_color(i, j, time, mode[0])},${Cal_color(i, j, time, mode[1])},${Cal_color(i, j, time, mode[2])})`;
+                ctx.fillRect(i, j, 1, 1);
             }
         }
 
-        function randomStep() {
-            return (Math.random() > .5 ? 1 : -1) * 10 * Math.random();
+        function Cal_color(i, j, time, mode) {
+            switch (mode) {
+                case 0:
+                    return (i + j + time) % 255;
+                case 1:
+                    return (i - j + time) % 255;
+                case 2:
+                    return (i * j + time) % 255;
+                case 3:
+                    return (1 / (1 / i + 1 / j) + time) % 255;
+                case 4:
+                    return (i % j + j % i + time) % 255;
+                case 5:
+                    return (j - i + time) % 255;
+                case 6:
+                    return (-i - j + time) % 255;
+                case 7:
+                    return (time) % 255;
+            }
         }
+    } else if (map == 2) {
+        let time = Date.now();
+        let dis = 0;
+        let ang = 0;
+        let mod = [30 + Math.floor(720 * Math.random()), 30 + Math.floor(720 * Math.random()), 30 + Math.floor(720 * Math.random())];
+        let col;
+
+        const forlen = 2048 * 360;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, size, size);
+        for (i = 0; i < forlen; i++) {
+            ctx.beginPath();
+            //ctx.strokeStyle = '#0080FF40';
+            col = [(i + time) / mod[0] % 510, (i + time) / mod[1] % 510, (i + time) / mod[2] % 510];
+            for (index in col) {
+                if (col[index] > 255) col[index] = 510 - col[index];
+            }
+            ctx.strokeStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
+            ctx.arc(500, 500, dis, ang, ang + 4096 / forlen);
+            dis += size / 1.4 / forlen;
+            ang += 4096 / forlen;
+            ctx.stroke();
+        }
+
+        function Cal_pos(dis, ang) {
+            return [dis * Math.cos(ang) + size / 2, dis * Math.sin(ang) + size / 2];
+        }
+    } else {
+        alert('这是不支持的图像代码,刷新页面以重新生成吧!')
     }
+    ctx.font = "32px Consolas";
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#00000080";
+    ctx.fillText(`COLOR ART`, 4, 24);
+    ctx.fillText("MADE BY QHLG", 4, 48);
+    ctx.fillStyle = "#ffffff80";
+    ctx.fillText(`COLOR ART`, 4, 72);
+    ctx.fillText("MADE BY QHLG", 4, 96);
 </script>

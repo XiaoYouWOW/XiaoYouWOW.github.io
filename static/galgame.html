@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>不知道该写什么好干脆就不写了</title>
+</head>
+
+<body>
+    <button class="back" onclick="window.location.replace('./')">返回</button>
+    <button class="back" onclick="jump()">跳转</button>
+    <div class="main">
+        <div class="text" onclick="next()">
+            <p id="text" class="text"></p>
+        </div>
+        <div class="role">
+            <p id="role" class="role"></p>
+        </div>
+        <div class="choice">
+
+        </div>
+    </div>
+</body>
+
+<style>
+    html,
+    body {
+        background-color: #e5e5e5;
+        margin: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+    }
+
+    div.main {
+        margin: 5vh 5vw;
+        height: 90vh;
+        width: 90vw;
+    }
+
+    div.role {
+        position: absolute;
+        padding: 1vh 1vw;
+        left: 13vw;
+        top: 56vh;
+        width: 20vw;
+        height: 4vh;
+        border: 2px solid rgb(60, 150, 40);
+        border-radius: 4vh;
+        background-color: rgb(148, 191, 105);
+    }
+
+    p.role {
+        text-align: center;
+        color: #fff;
+        margin: 0;
+        width: 20vw;
+        height: 4vh;
+        font-size: 3vh;
+        line-height: 4vh;
+    }
+
+    div.text {
+        position: absolute;
+        padding: 5vh 5vw;
+        left: 10vw;
+        top: 60vh;
+        width: 70vw;
+        height: 20vh;
+        border: 3px solid rgb(173, 8, 8);
+        border-radius: 5vh;
+        background-color: rgb(254, 216, 222);
+    }
+
+    p.text {
+        color: #222;
+        margin: 0;
+        width: 70vw;
+        height: 20vh;
+        font-size: 2.25vh;
+        line-height: 2.5vh;
+    }
+
+    button.back {
+        font-family: SimHei;
+        text-align: center;
+        border: 1px solid #fff;
+        color: #d8d8d8;
+        font-size: 2vh;
+        background-color: #00000080;
+    }
+</style>
+
+<script>
+    var role = document.getElementById('role');
+    var text = document.getElementById('text');
+
+    var now = -1;
+
+    var len = 0;
+
+    var rol = "???";
+    var txt = "";
+    var txtorg = "你是怎么找到这里的!!!\n总之,\n点击一下这个框来继续吧~~~";
+
+    refreshRole();
+    setInterval(() => {
+        len++;
+        len = Math.min(len, txtorg.length);
+        txt = txtorg.slice(0, len);
+        refreshText();
+    }, 125);
+
+    function refreshRole() {
+        role.innerText = rol;
+    }
+    function refreshText() {
+        text.innerText = txt;
+    }
+    function setTextColor(col) {
+        text.style.color = col;
+    }
+    function setBackColor(col) {
+        document.body.style.backgroundColor = col;
+    }
+
+    function next() {
+        len = 0;
+        now++;
+        try {
+            if (book[now].end) {
+                alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
+                window.location.replace('./');
+            }
+        } catch { }
+        try {
+            if (typeof book[now].role == 'undefined') throw (''); rol = book[now].role; refreshRole();
+        } catch { }
+        txtorg = book[now].text; refreshText();
+        try {
+            setTextColor(book[now].color);
+        } catch { }
+        try {
+            setBackColor(book[now].back);
+        } catch { }
+    }
+
+    function jump() {
+        let tar = null;
+        tar = parseInt(prompt("请选择你要跳转的页面号", 0));
+        if (isNaN(tar)) return;
+        setBackColor("#222");
+        setTextColor("#222");
+        now = -1;
+        for (; now < tar;) {
+            next();
+        }
+    }
+
+    function isNumber(value) {
+        return ((value !== null) &&
+            (value !== '') &&
+            !isNaN(Number(value.toString())));
+    }
+
+    //台本
+    const book = {
+        0: { role: "我", text: "Ciallo~", back: "#222" },
+        1: { role: "路人", text: "柚子厨真恶心" },
+        2: { role: "我", text: "不是" },
+        3: { text: "你勾八谁啊!!!", color: "#F00" },
+        4: { end: true }
+    };
+
+</script>

@@ -759,6 +759,7 @@
                 ctx.fill();
             }
 
+
             ctx.beginPath();
             if (colorfulball) {
                 ctx.fillStyle = `hsla(${Math.max(0, 180 - 3 * ballspd)}, 100%, 40%, 1)`;
@@ -768,6 +769,7 @@
             ctx.arc(ballshowpos[0], ballshowpos[1], ballradius, 0, 2 * Math.PI);
             ctx.fill();
 
+            
             ctx.beginPath();
             ctx.lineWidth = 5;
             if (colorfulball) {

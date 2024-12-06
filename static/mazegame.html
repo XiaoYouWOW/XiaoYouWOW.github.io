@@ -627,7 +627,7 @@
         }
 
         speedinput.onchange = () => {
-            document.getElementById("speedtext").innerHTML = `移速 | ${speedinput.value}`;
+            document.getElementById("speedtext").innerText = `移速 | ${speedinput.value}`;
         }
 
         function getMaze() {
