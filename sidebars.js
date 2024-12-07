@@ -36,7 +36,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'HTML项目',
-      items: ['html/maze','html/ball','html/art'],
+      items: ['html/maze','html/ball','html/art','html/gal'],
     },
   ],
 };

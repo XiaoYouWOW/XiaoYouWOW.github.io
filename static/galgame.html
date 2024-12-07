@@ -6,9 +6,13 @@
     <title>不知道该写什么好干脆就不写了</title>
 </head>
 
-<body>
-    <button class="back" onclick="window.location.replace('./')">返回</button>
-    <button class="back" onclick="jump()">跳转</button>
+<body onselectstart="return false">
+    <div class="head">
+        <button class="head" onclick="window.location.replace('./')">返回</button>
+        <button class="head" onclick="window.location.reload()">重置</button>
+        <button class="head" onclick="jumpPage()">跳转</button>
+        <button class="head" onclick="showPage()" id="page">当前</button>
+    </div>
     <div class="main">
         <div class="text" onclick="next()">
             <p id="text" class="text"></p>
@@ -17,7 +21,10 @@
             <p id="role" class="role"></p>
         </div>
         <div class="choice">
-
+            <button id="c0" onclick="choice(0)" class="choice"></button>
+            <button id="c1" onclick="choice(1)" class="choice"></button>
+            <button id="c2" onclick="choice(2)" class="choice"></button>
+            <button id="c3" onclick="choice(3)" class="choice"></button>
         </div>
     </div>
 </body>
@@ -25,17 +32,15 @@
 <style>
     html,
     body {
-        background-color: #e5e5e5;
+        background-color: #ddd;
         margin: 0;
         height: 100vh;
         width: 100vw;
         overflow: hidden;
     }
 
-    div.main {
-        margin: 5vh 5vw;
-        height: 90vh;
-        width: 90vw;
+    div.head {
+        margin: 10px;
     }
 
     div.role {
@@ -81,27 +86,63 @@
         line-height: 2.5vh;
     }
 
-    button.back {
+    div.choice {
+        position: absolute;
+        padding: 0 5vw;
+        left: 20vw;
+        top: 5vh;
+        width: 50vw;
+        height: 48vh;
+    }
+
+    button.choice {
+        font-family: SimHei;
+        text-align: center;
+        margin: 2vh 0;
+        color: #222;
+        height: 8vh;
+        width: 50vw;
+        font-size: 2.25vh;
+        line-height: 2.5vh;
+        border: 3px solid rgb(173, 8, 8);
+        border-radius: 5vh;
+        background-color: rgb(254, 216, 222);
+        opacity: 0;
+    }
+
+    button.choice:hover {
+        background-color: rgb(218, 153, 163);
+    }
+
+    button.head {
         font-family: SimHei;
         text-align: center;
         border: 1px solid #fff;
         color: #d8d8d8;
+        height: 3vh;
         font-size: 2vh;
         background-color: #00000080;
+    }
+
+    button.head:hover {
+        background-color: #80808080;
     }
 </style>
 
 <script>
+    const version = 1;
+
     var role = document.getElementById('role');
     var text = document.getElementById('text');
+    var page = document.getElementById('page');
 
     var now = -1;
 
     var len = 0;
 
-    var rol = "???";
+    var rol = "QHLG";
     var txt = "";
-    var txtorg = "你是怎么找到这里的!!!\n总之,\n点击一下这个框来继续吧~~~";
+    var txtorg = `欢迎来到QHLG的Galgame播放器v${version}\n在我们继续之前,\n点击一下这个框来开始吧~~~`;
 
     refreshRole();
     setInterval(() => {
@@ -109,7 +150,52 @@
         len = Math.min(len, txtorg.length);
         txt = txtorg.slice(0, len);
         refreshText();
-    }, 125);
+    }, 66);
+
+    function next() {
+        try { if (book[now].end) return; } catch { }
+        try { if (typeof book[now].choice != 'undefined') return; } catch { }
+        len = 0;
+        try {
+            if (typeof book[now].goto == 'undefined') throw ('');
+            now = book[now].goto;
+        } catch {
+            now++;
+        }
+        update();
+    }
+
+    function choice(option) {
+        if (typeof book[now].choice[option] == 'undefined') {
+            return;
+        }
+        len = 0;
+        now = book[now].choice[option].goto;
+        update();
+    }
+
+    function update() {
+        try {
+            if (book[now].end) {
+                alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
+                //window.location.replace('./');
+            }
+        } catch { }
+        try {
+            if (typeof book[now].role == 'undefined') throw (''); rol = book[now].role; refreshRole();
+        } catch { }
+        txtorg = book[now].text; refreshText();
+        try {
+            setTextColor(book[now].color);
+        } catch { }
+        try {
+            setBackColor(book[now].back);
+        } catch { }
+        try {
+            setChoice(book[now].choice);
+        } catch { }
+        page.innerText = `当前:${now}`;
+    }
 
     function refreshRole() {
         role.innerText = rol;
@@ -123,38 +209,42 @@
     function setBackColor(col) {
         document.body.style.backgroundColor = col;
     }
-
-    function next() {
-        len = 0;
-        now++;
-        try {
-            if (book[now].end) {
-                alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
-                window.location.replace('./');
+    function setChoice(choice) {
+        let c0 = document.getElementById('c0');
+        let c1 = document.getElementById('c1');
+        let c2 = document.getElementById('c2');
+        let c3 = document.getElementById('c3');
+        let c = [c0, c1, c2, c3];
+        if (typeof choice == 'undefined') {
+            c0.style.opacity = 0;
+            c1.style.opacity = 0;
+            c2.style.opacity = 0;
+            c3.style.opacity = 0;
+            c0.innerText = '';
+            c1.innerText = '';
+            c2.innerText = '';
+            c3.innerText = '';
+        } else {
+            for (keys in choice) {
+                c[keys].style.opacity = 1;
+                c[keys].innerText = choice[keys].text;
             }
-        } catch { }
-        try {
-            if (typeof book[now].role == 'undefined') throw (''); rol = book[now].role; refreshRole();
-        } catch { }
-        txtorg = book[now].text; refreshText();
-        try {
-            setTextColor(book[now].color);
-        } catch { }
-        try {
-            setBackColor(book[now].back);
-        } catch { }
+        }
     }
 
-    function jump() {
+    function jumpPage() {
         let tar = null;
         tar = parseInt(prompt("请选择你要跳转的页面号", 0));
         if (isNaN(tar)) return;
-        setBackColor("#222");
-        setTextColor("#222");
-        now = -1;
-        for (; now < tar;) {
-            next();
+        now = tar;
+        if (typeof book[tar] == 'undefined') {
+            alert("目标页面号不存在!");
+            now = -1;
+            return;
         }
+        setBackColor("#ddd");
+        setTextColor("#222");
+        update();
     }
 
     function isNumber(value) {
@@ -163,13 +253,35 @@
             !isNaN(Number(value.toString())));
     }
 
+    function showPage() {
+        if (now >= 0) {
+            alert(`当前页面号为${now}`);
+        }
+    }
+
     //台本
     const book = {
         0: { role: "我", text: "Ciallo~", back: "#222" },
         1: { role: "路人", text: "柚子厨真恶心" },
         2: { role: "我", text: "不是" },
-        3: { text: "你勾八谁啊!!!", color: "#F00" },
-        4: { end: true }
+        3: { text: "你勾八谁啊!!!", color: "#F22" },
+        4: {
+            role: "",
+            text: "你现在要怎么做\n是和他打一架\n还是做一个懦夫?",
+            color: "#222",
+            choice: {
+                0: { text: "必须打一架", goto: 4001 },
+                1: { text: "做一个懦夫就好", goto: 4101 },
+                2: { text: "我是天子,我不选", goto: 4201 },
+            }
+        },
+        4001: { text: "不要打架!打赢坐牢!打输住院!", back: "#822", color: "#222" },
+        4002: { role: "BadEnd", text: "牢狱之苦", goto: 5 },
+        4101: { text: "你越想越气,一口气没上来憋死了", back: "#822", color: "#222" },
+        4102: { role: "BadEnd", text: "终极忍者", goto: 5 },
+        4201: { text: "说得对!老子来互联网就是做天子的!", back: "#282", color: "#222" },
+        4202: { role: "HappyEnd", text: "我在中间", goto: 5 },
+        5: { end: true },
     };
 
 </script>

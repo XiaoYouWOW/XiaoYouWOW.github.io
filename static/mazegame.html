@@ -236,6 +236,35 @@
             text-shadow: 1px 1px 1px #d88;
             float: right
         }
+
+        button.back {
+            outline: none;
+            font-family: Consolas, SimHei;
+            display: block;
+            margin: auto;
+            border: 0;
+            line-height: 2;
+            padding: 0 10px;
+            font-size: 1rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 1px 1px 1px #000;
+            border-radius: 10px;
+            background-color: rgb(180 0 0 / 100%);
+            box-shadow:
+                inset 2px 2px 3px rgb(255 255 255 / 60%),
+                inset -2px -2px 3px rgb(0 0 0 / 60%);
+        }
+
+        button.back:hover {
+            background-color: rgb(220 0 0 / 100%);
+        }
+
+        button.back:active {
+            box-shadow:
+                inset -2px -2px 3px rgb(255 255 255 / 60%),
+                inset 2px 2px 3px rgb(0 0 0 / 60%);
+        }
     </style>
 </head>
 
@@ -243,6 +272,9 @@
     onselect="document.selection.empty()" oncopy="document.selection.empty()" onbeforecopy="return false"
     onmouseup="document.selection.empty()">
     <div class="divfunction">
+        <div id="divreset">
+            <button class="back" onclick="window.location.replace('../docs/html/maze')">返回</button>
+        </div>
         <div id="divreset">
             <button tabindex="-1" class="reset" type="button" onclick="resetMaze()" title="重新生成新的迷宫">重置迷宫(M)</button>
         </div>

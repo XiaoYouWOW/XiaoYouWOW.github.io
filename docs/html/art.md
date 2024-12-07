@@ -4,7 +4,7 @@ sidebar_position: 6
 
 # 抽象艺术
 
-这里有<a href="/colorart.html">在线版</a>
+点击<a href="/colorart.html">此处</a>游玩
 
 可能占用较多资源,生成需要数秒时间,推荐使用电脑生成
 

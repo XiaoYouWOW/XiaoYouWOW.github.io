@@ -8,6 +8,8 @@
 
 <body>
     <div id="main" class="map">
+        <button class="back" onclick="window.location.replace('../docs/html/art')">返回</button>
+        <button class="back" onclick="window.location.reload()">生成</button>
         <canvas id="map" class="map" width="1024" height="1024"></canvas>
     </div>
 </body>
@@ -21,14 +23,26 @@
     }
 
     div.map {
-        height: calc(min(95vh, 95vw));
+        height: calc(min(92vh, 92vw));
         margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
-        background-color: #fff;
     }
 
     canvas.map {
         height: 100%;
         width: 100%;
+    }
+
+    button.back {
+        font-family: SimHei;
+        text-align: center;
+        border: 1px solid #fff;
+        color: #d8d8d8;
+        font-size: 2vh;
+        background-color: #00000080;
+    }
+
+    button.back:hover {
+        background-color: #80808080;
     }
 </style>
 
@@ -82,11 +96,13 @@
             }
         }
     } else if (map == 1) {
-        let time = Date.now();
-        let mode = [Math.floor(8 * Math.random()), Math.floor(8 * Math.random()), Math.floor(8 * Math.random())];
+        const totmode = 14;
 
-        for (i = 0; i < size; i++) {
-            for (j = 0; j < size; j++) {
+        let time = Date.now();
+        let mode = [Math.floor(totmode * Math.random()), Math.floor(totmode * Math.random()), Math.floor(totmode * Math.random())];
+
+        for (i = -1; i < size; i++) {
+            for (j = -1; j < size; j++) {
                 ctx.fillStyle = `rgb(${Cal_color(i, j, time, mode[0])},${Cal_color(i, j, time, mode[1])},${Cal_color(i, j, time, mode[2])})`;
                 ctx.fillRect(i, j, 1, 1);
             }
@@ -109,9 +125,28 @@
                 case 6:
                     return (-i - j + time) % 255;
                 case 7:
+                    return (i % j - j % i + time) % 255;
+                case 8:
+                    return (j % i - i % j + time) % 255;
+                case 9:
+                    return (i * Math.sin(j / 31.4) + time) % 255;
+                case 10:
+                    return (j * Math.sin(i / 31.4) + time) % 255;
+                case 11:
+                    return Math.random() * 255;
+                case 12:
+                    return (time) % 255;
+                case 13:
                     return (time) % 255;
             }
         }
+
+        ctx.font = "32px Consolas";
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#00000080";
+        ctx.fillText(`mode:${mode[0]},${mode[1]},${mode[2]}`, 1020, 24);
+        ctx.fillStyle = "#ffffff80";
+        ctx.fillText(`mode:${mode[0]},${mode[1]},${mode[2]}`, 1020, 48);
     } else if (map == 2) {
         let time = Date.now();
         let dis = 0;

@@ -4,13 +4,15 @@ sidebar_position: 5
 
 # 小球模拟
 
-这里有<a href="/ballsimulate.html">在线版</a>
+点击<a href="/ballsimulate.html">此处</a>游玩
 
-可前往[我的个人群](https://qm.qq.com/q/bImTc3BPsA)下载HTML文件,请用电脑浏览器打开
+基于js搭建的物理引擎
 
 当前版本为 v11
 
 ## 已知问题
+
+- 不知道有什么问题就是没问题
 
 ## 更新日志
 
