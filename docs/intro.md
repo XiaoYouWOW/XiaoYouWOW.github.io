@@ -32,11 +32,11 @@ sidebar_position: 1
 - DanceRailRefresh
 - DanceRail3
 
-<img src="../docs/b19.jpg" alt="Image Alt Text" width="320" height="655" />
+<img src="../docs/b19.jpg" alt="加载不出来!!!我生吃你妈!!!" width="600" />
 <br />
-<img src="../docs/b50.jpg" alt="Image Alt Text" width="560" height="460" />
+<img src="../docs/b50.jpg" alt="加载不出来!!!我生吃你妈!!!" width="600" />
 <br />
-<img src="https://api.lolimi.cn/API/preview/api.php?qq=&msg=我去是音游大神&msg2=教我教我教我&type=115" width="400px" height="130px" alt="加载不出来!!!我生吃你妈!!!"></img>
+<img src="https://api.lolimi.cn/API/preview/api.php?qq=&msg=我去是音游大神&msg2=教我教我教我&type=115" width="400" alt="加载不出来!!!我生吃你妈!!!"></img>
 
 ### 安慕希
 

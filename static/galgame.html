@@ -3,21 +3,23 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>不知道该写什么好干脆就不写了</title>
 </head>
 
 <body onselectstart="return false">
     <div class="head">
-        <button class="head" onclick="window.location.replace('./')">返回</button>
-        <button class="head" onclick="window.location.reload()">重置</button>
-        <button class="head" onclick="jumpPage()">跳转</button>
-        <button class="head" onclick="showPage()" id="page">当前</button>
+        <button class="head" onclick="window.location.replace('./docs/html/gal')">返回</button>
+        <button title="重启播放器" class="head" onclick="window.location.reload()">重置</button>
+        <button title="跳转至指定页面号" class="head" onclick="jumpPage()">跳转</button>
+        <button title="当前页面号" class="head" onclick="showPage()" id="page">当前</button>
+        <button title="重新加载当前台本" class="head" onclick="reloadBook()">重载</button>
+        <label title="请在这里导入你的台本" class="file">→<input type="file" class="inputbook" id="inputbook"
+                accept="application/json" onchange="handleFiles(this.files)" />←</label>
     </div>
     <div class="main">
         <div class="text" onclick="next()">
             <p id="text" class="text"></p>
         </div>
-        <div class="role">
+        <div id="rolediv" class="role">
             <p id="role" class="role"></p>
         </div>
         <div class="choice">
@@ -48,7 +50,7 @@
         padding: 1vh 1vw;
         left: 13vw;
         top: 56vh;
-        width: 20vw;
+        width: 30vw;
         height: 4vh;
         border: 2px solid rgb(60, 150, 40);
         border-radius: 4vh;
@@ -59,7 +61,7 @@
         text-align: center;
         color: #fff;
         margin: 0;
-        width: 20vw;
+        width: 30vw;
         height: 4vh;
         font-size: 3vh;
         line-height: 4vh;
@@ -127,80 +129,117 @@
     button.head:hover {
         background-color: #80808080;
     }
+
+    label.file {
+        font-family: SimHei;
+        text-align: center;
+        border: 1px solid #fff;
+        color: #d8d8d8;
+        font-size: 2vh;
+        background-color: #00000080;
+    }
+
+    input.inputbook {
+        font-family: SimHei;
+        text-align: center;
+        color: transparent;
+        height: 3vh;
+        width: 7.75vh;
+        font-size: 1.5vh;
+    }
 </style>
 
 <script>
-    const version = 1;
+    const version = 2;
 
     var role = document.getElementById('role');
     var text = document.getElementById('text');
     var page = document.getElementById('page');
 
+    var inputbook = document.getElementById('inputbook');
+
     var now = -1;
 
     var len = 0;
 
-    var rol = "QHLG";
+    var rol = "";
     var txt = "";
-    var txtorg = `欢迎来到QHLG的Galgame播放器v${version}\n在我们继续之前,\n点击一下这个框来开始吧~~~`;
+    var txtorg = ``;
 
-    refreshRole();
-    setInterval(() => {
-        len++;
-        len = Math.min(len, txtorg.length);
-        txt = txtorg.slice(0, len);
-        refreshText();
-    }, 66);
+    var clock;
+
+    var bookfile;
 
     function next() {
         try { if (book[now].end) return; } catch { }
         try { if (typeof book[now].choice != 'undefined') return; } catch { }
-        len = 0;
         try {
             if (typeof book[now].goto == 'undefined') throw ('');
             now = book[now].goto;
         } catch {
             now++;
         }
+        if (typeof book[now] == 'undefined') {
+            book = defaultbook;
+            loadBook();
+            alert("页面跳转错误\n已重新加载默认台本");
+        }
         update();
     }
 
     function choice(option) {
-        if (typeof book[now].choice[option] == 'undefined') {
-            return;
-        }
-        len = 0;
+        try { if (typeof book[now].choice[option] == 'undefined') { return; } } catch { return; }
         now = book[now].choice[option].goto;
+        if (typeof book[now] == 'undefined') {
+            book = defaultbook;
+            loadBook();
+            alert("页面跳转错误\n已重新加载默认台本");
+        }
         update();
     }
 
     function update() {
+        page.innerText = `当前:${now}`;
         try {
             if (book[now].end) {
                 alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
+                return;
                 //window.location.replace('./');
             }
         } catch { }
         try {
-            if (typeof book[now].role == 'undefined') throw (''); rol = book[now].role; refreshRole();
+            if (typeof book[now].role == 'undefined') throw ('');
+            rol = book[now].role;
+            setRole(rol);
         } catch { }
-        txtorg = book[now].text; refreshText();
+        len = 0;
+        txt = book[now].text; setText("");
         try {
+            if (typeof book[now].speed == 'undefined') throw ('');
+            setSpeed(book[now].speed);
+        } catch { }
+        try {
+            if (typeof book[now].color == 'undefined') throw ('');
             setTextColor(book[now].color);
         } catch { }
         try {
+            if (typeof book[now].back == 'undefined') throw ('');
             setBackColor(book[now].back);
         } catch { }
         try {
             setChoice(book[now].choice);
         } catch { }
-        page.innerText = `当前:${now}`;
     }
 
-    function refreshRole() {
-        role.innerText = rol;
+    function setRole(rol) {
+        if (rol == "") {
+            document.getElementById('rolediv').style.opacity = 0;
+        } else {
+            document.getElementById('rolediv').style.opacity = 1;
+            role.innerText = rol;
+        }
     }
-    function refreshText() {
+    function setText(txt) {
         text.innerText = txt;
     }
     function setTextColor(col) {
@@ -231,6 +270,15 @@
             }
         }
     }
+    function setSpeed(spd) {
+        clearInterval(clock);
+        clock = setInterval(() => {
+            len++;
+            len = Math.min(len, txt.length);
+            txtshow = txt.slice(0, len);
+            setText(txtshow);
+        }, 1000 / spd);
+    }
 
     function jumpPage() {
         let tar = null;
@@ -259,8 +307,57 @@
         }
     }
 
-    //台本
-    const book = {
+    function handleFiles(file) {
+        bookfile = file;
+        const reader = new FileReader();
+        reader.readAsText(file[0], 'utf8');
+        reader.onload = () => {
+            book = JSON.parse(reader.result);
+            loadBook();
+        };
+    }
+
+    function reloadBook() {
+        if (typeof bookfile != 'undefined') {
+            handleFiles(bookfile);
+        } else {
+            loadBook();
+        }
+    }
+
+    function loadBook() {
+        try {
+            len = 0;
+            now = -1;
+            rol = book.meta.author;
+            txt = book.meta.content;
+            setRole(book.meta.author);
+            setText("");
+            if (typeof book.meta.version == 'undefined') throw ('');
+            try { setBackColor(book.meta.backcolor); } catch { setBackColor(defaultbook.meta.backcolor); }
+            try { setTextColor(book.meta.textcolor); } catch { setTextColor(defaultbook.meta.textcolor); }
+            document.title = book.meta.title;
+            try { setSpeed(book.meta.speed); } catch { setSpeed(defaultbook.meta.speed); }
+            setChoice();
+            page.innerText = `当前`;
+        } catch {
+            book = defaultbook;
+            loadBook();
+            alert("元数据读取错误\n已重新加载默认台本");
+        }
+    }
+
+    //默认台本
+    const defaultbook = {
+        meta: {
+            author: "QHLG",
+            title: "不知道该写什么好干脆就不写了",
+            version: `${version}`,
+            content: `欢迎来到QHLG的Galgame播放器v${version}\n在我们继续之前,\n点击一下这个框来开始吧~~~`,
+            speed: 10,
+            backcolor: "#ddd",
+            textcolor: "#222"
+        },
         0: { role: "我", text: "Ciallo~", back: "#222" },
         1: { role: "路人", text: "柚子厨真恶心" },
         2: { role: "我", text: "不是" },
@@ -283,5 +380,8 @@
         4202: { role: "HappyEnd", text: "我在中间", goto: 5 },
         5: { end: true },
     };
+    var book = defaultbook;
+
+    loadBook();
 
 </script>

@@ -115,15 +115,15 @@
                 case 1:
                     return (i - j + time) % 255;
                 case 2:
-                    return (i * j + time) % 255;
-                case 3:
-                    return (1 / (1 / i + 1 / j) + time) % 255;
-                case 4:
-                    return (i % j + j % i + time) % 255;
-                case 5:
                     return (j - i + time) % 255;
-                case 6:
+                case 3:
                     return (-i - j + time) % 255;
+                case 4:
+                    return (i * j + time) % 255;
+                case 5:
+                    return (1 / (1 / i + 1 / j) + time) % 255;
+                case 6:
+                    return (i % j + j % i + time) % 255;
                 case 7:
                     return (i % j - j % i + time) % 255;
                 case 8:
@@ -135,7 +135,7 @@
                 case 11:
                     return Math.random() * 255;
                 case 12:
-                    return (time) % 255;
+                    return ((i ** 2 + j ** 2) ** 0.5 + time) % 255;
                 case 13:
                     return (time) % 255;
             }
