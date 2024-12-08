@@ -202,9 +202,13 @@
         page.innerText = `当前:${now}`;
         try {
             if (book[now].end) {
-                alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
-                return;
-                //window.location.replace('./');
+                if (book.meta.finish) {
+                    alert(`故事结束了,如果你想重新体验,请点击重载~`);
+                    return;
+                } else {
+                    alert(`当前版本的故事到这里就结束了...请返回吧~\n请记住当前页面号为${now},下次可点击跳转至对应进度`);
+                    return;
+                }
             }
         } catch { }
         try {
@@ -312,7 +316,22 @@
         const reader = new FileReader();
         reader.readAsText(file[0], 'utf8');
         reader.onload = () => {
-            book = JSON.parse(reader.result);
+            try {
+                book = JSON.parse(reader.result);
+            } catch {
+                book = defaultbook;
+                loadBook();
+                alert("输入文件格式错误\n已重新加载默认台本");
+                return;
+            }
+            try {
+                alert(`当前台本信息\n标题:${book.meta.title}\n作者:${book.meta.author}\n版本:${book.meta.version}\n页面数:${Object.keys(book).length - 1}`);
+            } catch {
+                book = defaultbook;
+                loadBook();
+                alert("元数据读取错误\n已重新加载默认台本");
+                return;
+            }
             loadBook();
         };
     }
@@ -353,6 +372,7 @@
             author: "QHLG",
             title: "不知道该写什么好干脆就不写了",
             version: `${version}`,
+            finish: false,
             content: `欢迎来到QHLG的Galgame播放器v${version}\n在我们继续之前,\n点击一下这个框来开始吧~~~`,
             speed: 10,
             backcolor: "#ddd",
