@@ -28,7 +28,7 @@ const sidebars = {
     },
   ],
    */
-  
+
   tutorialSidebar: [
     'intro',
     'jrrp',
@@ -36,7 +36,16 @@ const sidebars = {
     {
       type: 'category',
       label: 'HTML项目',
-      items: ['html/maze','html/ball','html/art','html/gal'],
+      items: ['html/maze', 'html/ball', 'html/art', 'html/gal'],
+    },
+    {
+      type: 'category',
+      label: '冷咲话',
+      items: [{
+        type: 'doc',
+        label: '咲希了',
+        id: 'joke/joke',
+      }],
     },
   ],
 };

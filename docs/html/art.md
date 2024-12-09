@@ -1,5 +1,4 @@
 ---
-sidebar_position: 6
 ---
 
 # 抽象艺术

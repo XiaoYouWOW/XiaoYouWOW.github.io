@@ -1,5 +1,4 @@
 ---
-sidebar_position: 5
 ---
 
 # 小球模拟
