@@ -29,6 +29,7 @@
             <button id="c3" onclick="choice(3)" class="choice"></button>
         </div>
     </div>
+    <iframe class="history" id="history"></iframe>
 </body>
 
 <style>
@@ -147,16 +148,30 @@
         width: 7.75vh;
         font-size: 1.5vh;
     }
+
+    iframe.history {
+        position: absolute;
+        padding: 2vh 2vw;
+        left: 20vw;
+        top: 110vh;
+        width: 56vw;
+        height: 66vh;
+        border: 3px solid rgb(164, 149, 11);
+        border-radius: 5vh;
+        background-color: rgb(255, 245, 170);
+    }
 </style>
 
 <script>
-    const version = 4;
+    const version = 5;
 
     var role = document.getElementById('role');
     var text = document.getElementById('text');
     var page = document.getElementById('page');
 
     var inputbook = document.getElementById('inputbook');
+
+    var histxt = document.getElementById('history');
 
     var now = -1;
 
@@ -165,6 +180,9 @@
     var rol = "";
     var txt = "";
     var txtorg = ``;
+
+    var his = 1;
+    var hisarray = [];
 
     var clock;
 
@@ -189,6 +207,11 @@
 
     function choice(option) {
         try { if (typeof book[now].choice[option] == 'undefined') { return; } } catch { return; }
+        hisarray.unshift(`<div class="message">
+            <p class="role">选项</p>
+            <p class="text">${book[now].choice[option].text}</p>
+        </div>`)
+        updatehistory();
         now = book[now].choice[option].goto;
         if (typeof book[now] == 'undefined') {
             book = defaultbook;
@@ -233,6 +256,11 @@
         try {
             setChoice(book[now].choice);
         } catch { }
+        hisarray.unshift(`<div class="message">
+            <p class="role">${typeof book[now].role == 'undefined' || book[now].role == '' || book[now].role == ' ' ? '' : `${book[now].role}`}</p>
+            <p class="text">${book[now].text}</p>
+        </div>`)
+        updatehistory();
     }
 
     function setRole(rol) {
@@ -283,6 +311,39 @@
             setText(txtshow);
         }, 1000 / spd);
     }
+    function updatehistory() {
+        histxt.srcdoc = `
+            ${hisarray.join('')}
+            <style>
+                div.message {
+                    margin: 0;
+                    width: 96vw;
+                }
+                p.role {
+                    display: inline-block;
+                    margin: 0;
+                    text-align: right;
+                    width: 15vw;
+                    font-size: 3vh;
+                    line-height: 3vh;
+                    color: #222;
+                }
+                p.text {
+                    display: inline-block;
+                    margin: 1.5vh 0 1.5vh 3vw;
+                    text-align: left;
+                    width: 75vw;
+                    font-size: 2.5vh;
+                    line-height: 2.5vh;
+                    color: #444;
+                }
+            </style>
+        `
+    }
+    function clearhistory() {
+        hisarray = [];
+        updatehistory();
+    }
 
     function jumpPage() {
         let tar = null;
@@ -294,6 +355,7 @@
             now = -1;
             return;
         }
+        clearhistory();
         setBackColor("#ddd");
         setTextColor("#222");
         update();
@@ -359,12 +421,25 @@
             try { setSpeed(book.meta.speed); } catch { setSpeed(defaultbook.meta.speed); }
             setChoice();
             page.innerText = `当前`;
+            clearhistory();
         } catch {
             book = defaultbook;
             loadBook();
             alert("元数据读取错误\n已重新加载默认台本");
         }
     }
+
+    window.onload = () => {
+        window.onkeydown = (e) => {
+            console.log(e.keyCode)
+            if (e.keyCode == 72) {
+                his = 1 - his;
+                histxt.style.top = `${100 * his + 10}vh`;
+                return;
+            }
+        }
+    }
+
 
     //默认台本
     const defaultbook = {
