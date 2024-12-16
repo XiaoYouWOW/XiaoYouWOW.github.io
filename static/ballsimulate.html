@@ -14,14 +14,14 @@
         }
 
         div.ballmap {
-            height: calc(min(95vh, 95vw));
+            height: calc(min(92vh, 92vw));
             margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
-            background-color: #fff;
         }
 
         canvas.ballmap {
             height: 100%;
             width: 100%;
+            background-color: #fff;
         }
 
         button.back {
@@ -31,9 +31,6 @@
             color: #d8d8d8;
             font-size: 2vh;
             background-color: #00000080;
-            position: absolute;
-            top: 10px;
-            left: 10px;
         }
 
         button.back:hover {
@@ -45,15 +42,16 @@
 <body onmousemove="/HideMenu()/" oncontextmenu="return false" ondragstart="return false" onselectstart="return false"
     onselect="document.selection.empty()" oncopy="document.selection.empty()" onbeforecopy="return false"
     onmouseup="document.selection.empty()">
-    <button class="back" onclick="window.location.replace('../docs/html/ball')">返回</button>
     <div class="ballmap">
+        <button class="back" onclick="window.location.replace('../docs/html/ball')">返回</button>
+        <button class="back" onclick="language()">文/A</button>
         <canvas id="ballmap" class="ballmap" width="2100" height="2100">很遗憾你的浏览器不支持这个模拟</canvas>
     </div>
 
     <script>
 
         //版本号
-        const version = 11;
+        const version = 12;
 
         //小球基本属性
         const ballradius = 50;
@@ -138,6 +136,7 @@
         var colorfulball;
         var trailing;
         var power;
+        var lang;
 
         //手柄设置
         var accuratemove;
@@ -193,6 +192,7 @@
             colorfulball = true;
             trailing = true;
             power = 5;
+            lang = true;
 
             //手柄设置
             accuratemove = false;
@@ -245,88 +245,170 @@
                     ctx.fillRect(2100 - 5 * index - 35, 2100 - 30 * framehis[index] * 8 / tickspeed[timespeed] - 30, 5, 30 * framehis[index] * 8 / tickspeed[timespeed]);
                 }
 
-                ctx.fillStyle = "#000";
-                ctx.textAlign = "right";
-                //避免在0tick的时候NaN
-                let tot = 1e-10;
-                for (index in framehis) {
-                    tot += framehis[index];
-                }
-                ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 720 - 40);
+                if (lang) {
 
-                ctx.textAlign = "left";
-                ctx.fillText(`mspt ${Math.round(10 * tot / framehis.length) / 10}`, 2100 - 901 - 30, 2100 - 720 - 40);
+                    ctx.font = "60px SimHei";
 
-                ctx.textAlign = "left";
-                ctx.fillStyle = "blue";
-                ctx.fillText(`Tick:${tick}`, 10, 50);
-                ctx.fillText(`pos:(${Math.round(ballpos[0] - 1050)},${Math.round(ballpos[1] - 1050)})`, 10, 110);
-                ctx.fillText(`vel:(${Math.round(ballvel[0] * 100 / 1.25)},${Math.round(ballvel[1] * 100 / 1.25)})`, 10, 170);
-                ctx.fillText(`acc:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
-                ctx.fillText(`dis:${Math.round(balldis * 100)}`, 10, 290);
-                ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
+                    ctx.fillStyle = "#000";
+                    ctx.textAlign = "right";
+                    //避免在0tick的时候NaN
+                    let tot = 1e-10;
+                    for (index in framehis) {
+                        tot += framehis[index];
+                    }
+                    ctx.fillText(`刻速度 ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 720 - 40);
 
+                    ctx.textAlign = "left";
+                    ctx.fillText(`毫秒/刻 ${Math.round(10 * tot / framehis.length) / 10}`, 2100 - 901 - 30, 2100 - 720 - 40);
 
-                ctx.fillStyle = "green";
-                ctx.textAlign = "right";
-                ctx.fillText(`TimeSpeed:${timespeed}(${tickspeed[timespeed]}mspt)`, 2090, 50);
-                ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 110);
-                if (brownian) {
-                    ctx.fillStyle = "red";
-                } else {
+                    ctx.textAlign = "left";
+                    ctx.fillStyle = "blue";
+                    ctx.fillText(`时间:${tick}`, 10, 50);
+                    ctx.fillText(`位置:(${Math.round(ballpos[0] - 1050)},${Math.round(ballpos[1] - 1050)})`, 10, 110);
+                    ctx.fillText(`速度:(${Math.round(ballvel[0] * 100 / 1.25)},${Math.round(ballvel[1] * 100 / 1.25)})`, 10, 170);
+                    ctx.fillText(`加速度:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
+                    ctx.fillText(`位移:${Math.round(balldis * 100)}`, 10, 290);
+                    ctx.fillText(`速率:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
+
                     ctx.fillStyle = "green";
-                }
-                ctx.fillText(`AirResistance:${brownian || !noairresistance}`, 2090, 170);
-                ctx.fillText(`Gravity:${!brownian && !nogravity}`, 2090, 230);
-                ctx.fillStyle = "green";
-                ctx.fillText(`BrownianMotion:${brownian}`, 2090, 290);
-                ctx.fillText(`ColorfulBall:${colorfulball}`, 2090, 350);
-                ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 410);
-                ctx.fillText(`Trailing:${trailing}`, 2090, 470);
-                ctx.fillText(`Pause:${pause}`, 2090, 530);
-                if (gamepadIndex != null) {
-                    ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 590);
-                }
+                    ctx.textAlign = "right";
+                    ctx.fillText(`时间流速:${timespeed}(${tickspeed[timespeed]}毫秒/刻)`, 2090, 50);
+                    ctx.fillText(`移动力度:${power}(${power * 400}像素/秒²)`, 2090, 110);
+                    if (brownian) {
+                        ctx.fillStyle = "red";
+                    } else {
+                        ctx.fillStyle = "green";
+                    }
+                    ctx.fillText(`空气阻力:${(brownian || !noairresistance)?"开":"关"}`, 2090, 170);
+                    ctx.fillText(`重力:${(!brownian && !nogravity)?"开":"关"}`, 2090, 230);
+                    ctx.fillStyle = "green";
+                    ctx.fillText(`布朗运动:${(brownian)?"开":"关"}`, 2090, 290);
+                    ctx.fillText(`彩色球体:${(colorfulball)?"开":"关"}`, 2090, 350);
+                    ctx.fillText(`移除墙面:${(ingorewall)?"开":"关"}`, 2090, 410);
+                    ctx.fillText(`拖尾:${(trailing)?"开":"关"}`, 2090, 470);
+                    ctx.fillText(`暂停:${(pause)?"开":"关"}`, 2090, 530);
+                    if (gamepadIndex != null) {
+                        ctx.fillText(`精准移动:${(accuratemove)?"开":"关"}`, 2090, 590);
+                    }
 
+                    if (gamepadIndex == null) {
+                        ctx.textAlign = "left";
+                        ctx.fillStyle = "goldenrod";
+                        ctx.fillText(`快捷键`, 10, 2100 - 740);
+                        ctx.fillText(`F - 状态`, 10, 2100 - 680);
+                        ctx.fillText(`P - 暂停`, 10, 2100 - 620);
+                        ctx.fillText(`M - 复位`, 10, 2100 - 560);
+                        ctx.fillText(`+/- - 时间流速`, 10, 2100 - 500);
+                        ctx.fillText(`0~9 - 移动力度`, 10, 2100 - 440);
+                        ctx.fillText(`↑↓←→/WASD - 移动`, 10, 2100 - 380);
+                        ctx.fillText(`G - 重力`, 10, 2100 - 320);
+                        ctx.fillText(`T - 拖尾`, 10, 2100 - 260);
+                        ctx.fillText(`I - 移除墙面`, 10, 2100 - 200);
+                        ctx.fillText(`C - 彩色球体`, 10, 2100 - 140);
+                        ctx.fillText(`R - 空气阻力`, 10, 2100 - 80);
+                        ctx.fillText(`B - 布朗运动`, 10, 2100 - 20);
+                    } else {
+                        ctx.textAlign = "left";
+                        ctx.fillStyle = "goldenrod";
+                        ctx.fillText(`快捷键`, 10, 2100 - 800);
+                        ctx.fillText(`Select/Back - 状态`, 10, 2100 - 740);
+                        ctx.fillText(`Start - 暂停`, 10, 2100 - 680);
+                        ctx.fillText(`LB - 复位`, 10, 2100 - 620);
+                        ctx.fillText(`RB - 精准移动`, 10, 2100 - 560);
+                        ctx.fillText(`←→ - 时间流速`, 10, 2100 - 500);
+                        ctx.fillText(`↑↓ - 移动力度`, 10, 2100 - 440);
+                        ctx.fillText(`LS - 移动`, 10, 2100 - 380);
+                        ctx.fillText(`X - 重力`, 10, 2100 - 320);
+                        ctx.fillText(`Y - 移除墙面`, 10, 2100 - 260);
+                        ctx.fillText(`A - 空气阻力`, 10, 2100 - 200);
+                        ctx.fillText(`B - 布朗运动`, 10, 2100 - 140);
+                        ctx.fillText(`LT - 拖尾`, 10, 2100 - 80);
+                        ctx.fillText(`RT - 彩色球体`, 10, 2100 - 20);
+                    }
 
-                if (gamepadIndex == null) {
-                    ctx.font = "60px Consolas";
-                    ctx.textAlign = "left";
-                    ctx.fillStyle = "goldenrod";
-                    ctx.fillText(`HOTKEY`, 10, 2100 - 740);
-                    ctx.fillText(`F - State`, 10, 2100 - 680);
-                    ctx.fillText(`P - Pause`, 10, 2100 - 620);
-                    ctx.fillText(`M - Reposition`, 10, 2100 - 560);
-                    ctx.fillText(`+/- - Time Speed`, 10, 2100 - 500);
-                    ctx.fillText(`0~9 - Move Power`, 10, 2100 - 440);
-                    ctx.fillText(`↑↓←→/WASD - Move`, 10, 2100 - 380);
-                    ctx.fillText(`G - Gravity`, 10, 2100 - 320);
-                    ctx.fillText(`T - Trailing`, 10, 2100 - 260);
-                    ctx.fillText(`I - Ingore Wall`, 10, 2100 - 200);
-                    ctx.fillText(`C - Colorful Ball`, 10, 2100 - 140);
-                    ctx.fillText(`R - Air Resistance`, 10, 2100 - 80);
-                    ctx.fillText(`B - Brownian Motion`, 10, 2100 - 20);
                 } else {
-                    ctx.font = "60px Consolas";
+
+                    ctx.fillStyle = "#000";
+                    ctx.textAlign = "right";
+                    //避免在0tick的时候NaN
+                    let tot = 1e-10;
+                    for (index in framehis) {
+                        tot += framehis[index];
+                    }
+                    ctx.fillText(`TPS ${Math.round(framehis.length * (1000 / tot))}`, 2100 - 30, 2100 - 720 - 40);
+
                     ctx.textAlign = "left";
-                    ctx.fillStyle = "goldenrod";
-                    ctx.fillText(`HOTKEY`, 10, 2100 - 800);
-                    ctx.fillText(`Select/Back - State`, 10, 2100 - 740);
-                    ctx.fillText(`Start - Pause`, 10, 2100 - 680);
-                    ctx.fillText(`LB - Reposition`, 10, 2100 - 620);
-                    ctx.fillText(`RB - AccurateMove`, 10, 2100 - 560);
-                    ctx.fillText(`←→ - Time Speed`, 10, 2100 - 500);
-                    ctx.fillText(`↑↓ - Move Power`, 10, 2100 - 440);
-                    ctx.fillText(`LS - Move`, 10, 2100 - 380);
-                    ctx.fillText(`X - Gravity`, 10, 2100 - 320);
-                    ctx.fillText(`Y - Ingore Wall`, 10, 2100 - 260);
-                    ctx.fillText(`A - Air Resistance`, 10, 2100 - 200);
-                    ctx.fillText(`B - Brownian Motion`, 10, 2100 - 140);
-                    ctx.fillText(`LT - Trailing`, 10, 2100 - 80);
-                    ctx.fillText(`RT - Colorful Ball`, 10, 2100 - 20);
+                    ctx.fillText(`mspt ${Math.round(10 * tot / framehis.length) / 10}`, 2100 - 901 - 30, 2100 - 720 - 40);
+
+                    ctx.textAlign = "left";
+                    ctx.fillStyle = "blue";
+                    ctx.fillText(`Tick:${tick}`, 10, 50);
+                    ctx.fillText(`pos:(${Math.round(ballpos[0] - 1050)},${Math.round(ballpos[1] - 1050)})`, 10, 110);
+                    ctx.fillText(`vel:(${Math.round(ballvel[0] * 100 / 1.25)},${Math.round(ballvel[1] * 100 / 1.25)})`, 10, 170);
+                    ctx.fillText(`acc:(${Math.round(ballacc[0] * 10000)},${Math.round(ballacc[1] * 10000)})`, 10, 230);
+                    ctx.fillText(`dis:${Math.round(balldis * 100)}`, 10, 290);
+                    ctx.fillText(`spd:${Math.round(ballspd * 100 / 1.25)}`, 10, 350);
+
+                    ctx.fillStyle = "green";
+                    ctx.textAlign = "right";
+                    ctx.fillText(`TimeSpeed:${timespeed}(${tickspeed[timespeed]}mspt)`, 2090, 50);
+                    ctx.fillText(`MovePower:${power}(${power * 400}px/s²)`, 2090, 110);
+                    if (brownian) {
+                        ctx.fillStyle = "red";
+                    } else {
+                        ctx.fillStyle = "green";
+                    }
+                    ctx.fillText(`AirResistance:${brownian || !noairresistance}`, 2090, 170);
+                    ctx.fillText(`Gravity:${!brownian && !nogravity}`, 2090, 230);
+                    ctx.fillStyle = "green";
+                    ctx.fillText(`BrownianMotion:${brownian}`, 2090, 290);
+                    ctx.fillText(`ColorfulBall:${colorfulball}`, 2090, 350);
+                    ctx.fillText(`IngoreWall:${ingorewall}`, 2090, 410);
+                    ctx.fillText(`Trailing:${trailing}`, 2090, 470);
+                    ctx.fillText(`Pause:${pause}`, 2090, 530);
+                    if (gamepadIndex != null) {
+                        ctx.fillText(`AccurateMove:${accuratemove}`, 2090, 590);
+                    }
+
+                    if (gamepadIndex == null) {
+                        ctx.font = "60px Consolas";
+                        ctx.textAlign = "left";
+                        ctx.fillStyle = "goldenrod";
+                        ctx.fillText(`HOTKEY`, 10, 2100 - 740);
+                        ctx.fillText(`F - State`, 10, 2100 - 680);
+                        ctx.fillText(`P - Pause`, 10, 2100 - 620);
+                        ctx.fillText(`M - Reposition`, 10, 2100 - 560);
+                        ctx.fillText(`+/- - Time Speed`, 10, 2100 - 500);
+                        ctx.fillText(`0~9 - Move Power`, 10, 2100 - 440);
+                        ctx.fillText(`↑↓←→/WASD - Move`, 10, 2100 - 380);
+                        ctx.fillText(`G - Gravity`, 10, 2100 - 320);
+                        ctx.fillText(`T - Trailing`, 10, 2100 - 260);
+                        ctx.fillText(`I - Ingore Wall`, 10, 2100 - 200);
+                        ctx.fillText(`C - Colorful Ball`, 10, 2100 - 140);
+                        ctx.fillText(`R - Air Resistance`, 10, 2100 - 80);
+                        ctx.fillText(`B - Brownian Motion`, 10, 2100 - 20);
+                    } else {
+                        ctx.font = "60px Consolas";
+                        ctx.textAlign = "left";
+                        ctx.fillStyle = "goldenrod";
+                        ctx.fillText(`HOTKEY`, 10, 2100 - 800);
+                        ctx.fillText(`Select/Back - State`, 10, 2100 - 740);
+                        ctx.fillText(`Start - Pause`, 10, 2100 - 680);
+                        ctx.fillText(`LB - Reposition`, 10, 2100 - 620);
+                        ctx.fillText(`RB - AccurateMove`, 10, 2100 - 560);
+                        ctx.fillText(`←→ - Time Speed`, 10, 2100 - 500);
+                        ctx.fillText(`↑↓ - Move Power`, 10, 2100 - 440);
+                        ctx.fillText(`LS - Move`, 10, 2100 - 380);
+                        ctx.fillText(`X - Gravity`, 10, 2100 - 320);
+                        ctx.fillText(`Y - Ingore Wall`, 10, 2100 - 260);
+                        ctx.fillText(`A - Air Resistance`, 10, 2100 - 200);
+                        ctx.fillText(`B - Brownian Motion`, 10, 2100 - 140);
+                        ctx.fillText(`LT - Trailing`, 10, 2100 - 80);
+                        ctx.fillText(`RT - Colorful Ball`, 10, 2100 - 20);
+                    }
+
                 }
             }
-
 
             ctx.font = "128px Consolas";
             ctx.textAlign = "center";
@@ -808,6 +890,9 @@
             onDown = false;
         }
 
+        function language() {
+            lang = !lang;
+        }
 
     </script>
 

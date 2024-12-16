@@ -67,49 +67,52 @@ export default function () {
             if (time <= 10000) {
                 return `${Math.round(time / 1000)}秒,欢迎你的来访٩(๑❛ᴗ❛๑)۶`;
             }
-            else if (time > 10000) {
+            else if (time < 30000) {
                 return `${Math.round(time / 1000)}秒,这里是文案!你好呀~(oﾟ▽ﾟ)o  `;
             }
-            else if (time > 30000) {
+            else if (time < 60000) {
                 return `${Math.round(time / 1000)}秒,还在找想看的东西吗?ヾ(=･ω･=)o`;
             }
-            else if (time > 60000) {
-                return `${Math.round(time / 1000)}秒,看看下面这首歌,你可能会喜欢的!(*/ω＼*)`;
+            else if (time < 90000) {
+                return `${Math.round(time / 600) / 100}分,看看下面这首歌,你可能会喜欢的!(*/ω＼*)`;
             }
-            else if (time > 120000) {
+            else if (time < 120000) {
+                return `${Math.round(time / 600) / 100}分,这条文案不喜欢发颜文字!!!`;
+            }
+            else if (time < 186000) {
                 return `${Math.round(time / 600) / 100}分,你在和我一起发呆吗(｀・ω・´)`;
             }
-            else if (time > 186000) {
+            else if (time < 240000) {
                 return `${Math.round(time / 600) / 100}分,哇塞,你听完了这首歌!( • ̀ω•́ )✧`;
             }
-            else if (time > 240000) {
+            else if (time < 300000) {
                 return `${Math.round(time / 600) / 100}分,你想知道下一次这行字什么时候变化吗?`;
             }
-            else if (time > 300000) {
+            else if (time < 372000) {
                 return `${Math.round(time / 600) / 100}分,答案是五分钟!!!o(￣ε￣*) `;
             }
-            else if (time > 372000) {
+            else if (time < 480000) {
                 return `${Math.round(time / 600) / 100}分,难道说,你喜欢这首歌?!你已经听了两遍了!`;
             }
-            else if (time > 500000) {
+            else if (time < 600000) {
                 return `${Math.round(time / 600) / 100}分,后面没有了,相信我☆(ゝω･)v`;
             }
-            else if (time > 600000) {
+            else if (time < 900000) {
                 return `${Math.round(time / 600) / 100}分,好像有笨蛋忘记关浏览器了~~~o(´^｀)o哼哼哼!`;
             }
-            else if (time > 900000) {
+            else if (time < 1200000) {
                 return `${Math.round(time / 600) / 100}分,你住在这了???┌(。Д。)┐`;
             }
-            else if (time > 1200000) {
+            else if (time < 1800000) {
                 return `${Math.round(time / 600) / 100}分,Σ(っ°Д°;)っ 404 找不到文案`;
             }
-            else if (time > 1800000) {
+            else if (time < 2700000) {
                 return `${Math.round(time / 600) / 100}分,ʅ( ´・∧・｀)ʃ 我投降了!`;
             }
-            else if (time > 2700000) {
+            else if (time < 3600000) {
                 return `${Math.round(time / 600) / 100}分,为你颁发─=≡Σ((( つ•̀ω•́)つ发呆达人`;
             }
-            else if (time > 3600000) {
+            else {
                 return `${Math.round(time / 360) / 1000}小时,♪＼( >w<)︿(QwQ )／♪`;
             }
         }
