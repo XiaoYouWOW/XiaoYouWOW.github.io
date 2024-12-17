@@ -160,6 +160,12 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
+      giscus: {
+        repo: 'QHMY114514/QHMY114514.github.io',
+        repoId: 'R_kgDONW1Hww',
+        category: 'Announcements',
+        categoryId: 'DIC_kwDONW1Hw84ClS0T',
+      }
     }),
   // Add the Cloudflare Web Analytics script
   scripts: [
