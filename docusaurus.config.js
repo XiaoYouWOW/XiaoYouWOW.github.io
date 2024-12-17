@@ -163,7 +163,7 @@ const config = {
       giscus: {
         repo: 'QHMY114514/QHMY114514.github.io',
         repoId: 'R_kgDONW1Hww',
-        category: 'Announcements',
+        category: 'General',
         categoryId: 'DIC_kwDONW1Hw84ClS0T',
       }
     }),
