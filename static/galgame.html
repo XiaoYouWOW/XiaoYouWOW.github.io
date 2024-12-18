@@ -10,7 +10,7 @@
         <label class="title">控制</label>
         <button type="button" class="head" onclick="window.location.replace('./docs/html/gal')">返回网站</button>
         <button type="button" title="重启播放器" class="head" onclick="window.location.reload()">重置网页</button>
-        <button type="button" title="查看对话历史" class="head" onclick="presskey(72)">回溯</button>
+        <button type="button" title="查看对话历史" class="head" onclick="histbutt()">回溯</button>
     </div>
     <div class="head">
         <label class="title">文件</label>
@@ -183,7 +183,7 @@
 </style>
 
 <script>
-    const version = 7;
+    const version = 8;
 
     var role = document.getElementById('role');
     var text = document.getElementById('text');
@@ -228,10 +228,32 @@
         try { if (book[now].end) return; } catch { }
         try { if (typeof book[now].choice != 'undefined') return; } catch { }
         try {
-            if (typeof book[now].goto == 'undefined') throw ('');
-            now = book[now].goto;
+            if (typeof book[now].limitgoto == 'undefined') throw ('');
+            if (book[now].limitgoto.mode == '>') {
+                if (uservar[book[now].limitgoto.name] <= book[now].limitgoto.value) {
+                    throw ('');
+                }
+            } else if (book[now].limitgoto.mode == '<') {
+                if (uservar[book[now].limitgoto.name] >= book[now].limitgoto.value) {
+                    throw ('');
+                }
+            } else if (book[now].limitgoto.mode == '=') {
+                if (uservar[book[now].limitgoto.name] != book[now].limitgoto.value) {
+                    throw ('');
+                }
+            } else {
+                alert(`用户变量检查错误\n[页面${now}]limitgoto变量检测中:mode必须为'>','<'或'='\n已重载当前台本`);
+                loadBook();
+                return;
+            }
+            now = book[now].limitgoto.goto;
         } catch {
-            now++;
+            try {
+                if (typeof book[now].goto == 'undefined') throw ('');
+                now = book[now].goto;
+            } catch {
+                now++;
+            }
         }
         if (typeof book[now] == 'undefined') {
             alert(`页面跳转错误\n当前页面为${now}\n已重载当前台本`);
@@ -270,6 +292,7 @@
                     alert(`故事结束了,如果你想重新体验,请点击重载~`);
                     return;
                 } else {
+                    getSave();
                     alert(`当前版本的故事到这里就结束了...请返回吧~\n正在为您下载存档~`);
                     return;
                 }
@@ -353,17 +376,17 @@
                             if (typeof uservar[limit[item].name] == 'undefined') throw ('');
                             c[keys].style.opacity = 0.5;
                             c[keys].disabled = true;
-                            if (limit[item].mode = '>') {
+                            if (limit[item].mode == '>') {
                                 if (uservar[limit[item].name] > limit[item].value) {
                                     c[keys].style.opacity = 1;
                                     c[keys].disabled = false;
                                 }
-                            } else if (choice[keys].limit.mode = '<') {
+                            } else if (limit[item].mode == '<') {
                                 if (uservar[limit[item].name] < limit[item].value) {
                                     c[keys].style.opacity = 1;
                                     c[keys].disabled = false;
                                 }
-                            } else if (choice[keys].limit.mode = '=') {
+                            } else if (limit[item].mode == '=') {
                                 if (uservar[limit[item].name] == limit[item].value) {
                                     c[keys].style.opacity = 1;
                                     c[keys].disabled = false;
@@ -634,10 +657,10 @@
         return format;
     }
 
-    function presskey(code) {
-        document.dispatchEvent(new KeyboardEvent('keydown', {
-            keyCode: code,
-        }));
+    function histbutt() {
+        his = 1 - his;
+        histxt.style.top = `${100 * his + 10}vh`;
+        return;
     }
 
     window.onload = () => {

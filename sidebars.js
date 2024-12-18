@@ -36,6 +36,7 @@ const sidebars = {
     },
     'intro',
     'jrrp',
+    'song',
     'game',
     {
       type: 'category',
@@ -50,7 +51,7 @@ const sidebars = {
         label: '咲希了',
         id: 'joke/joke',
       }],
-    },
+    }
   ],
 };
 

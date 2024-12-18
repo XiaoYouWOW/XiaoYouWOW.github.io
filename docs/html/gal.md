@@ -11,10 +11,23 @@
 
 游玩和播放Galgame(?)
 
-当前版本为 v7
+当前版本为 v8
 
 ## 更新日志
 
+- v8
+```
+更新于2024/12/18
+新增了页面属性-limitgoto
+修复了游戏结束未下载存档的问题
+修复了回溯按钮失效的问题
+修复了变量相关的错误
+```
+[查看更新内容](#limitgoto-限制跳转)
+
+<details>
+    <summary>历史更新</summary>
+    
 - v7
 ```
 更新于2024/12/11
@@ -22,8 +35,6 @@
 优化了左上角按钮排列
 ```
 
-<details>
-    <summary>历史更新</summary>
 - v6
 ```
 更新于2024/12/11
@@ -308,6 +319,18 @@ page_a: { text: "另两些文本", goto: 2 },
 
 > 当然,通过goto你也可以做出一些类似于鬼打墙的效果~
 
+#### limitgoto 限制跳转
+
+非必要,在满足一定条件时跳转至另外一个指定的目标页面,会覆盖goto
+```json
+limitgoto: {
+    name: "var",
+    mode: ">",
+    value: 100,
+    goto: 123
+}
+```
+
 #### choice 选项
 
 非必要,创建一些分支选项,必须填text(选项文本)和goto(跳转页面),可以填limit(变量限制)
@@ -384,7 +407,7 @@ choice启用的状态下,页面的goto属性是无效的
     },
     "1": {
         "role": "对方",
-        "text": "你现在有四个选项",
+        "text": "你现在有四个选项,如果你选2,你就会进入Bad Ending",
         "color": "#22f",
         "back": "#f22",
         "speed": 5,
@@ -411,7 +434,10 @@ choice启用的状态下,页面的goto属性是无效的
         "role": "",
         "back": "#ff2",
         "text": "你选了2",
-        "goto": 2
+        "goto": 2,
+        "variable": [
+            { "name": "love", "value": 1 }
+        ]
     },
     "1301": {
         "role": "",
@@ -421,10 +447,21 @@ choice启用的状态下,页面的goto属性是无效的
     },
     "2": {
         "role": "love",
-        "text": "你的love是$love$"
+        "text": "你的love是$love$",
+        "limitgoto": {
+            "name": "love",
+            "mode": "=",
+            "value": 2,
+            "goto": 4
+        }
     },
     "3": {
         "end": true
+    },
+    "4": {
+        "text": "这是坏结局!",
+        "back": "#f22",
+        "goto": 3
     }
 }
 ```
