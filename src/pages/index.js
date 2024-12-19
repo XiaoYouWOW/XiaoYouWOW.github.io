@@ -170,10 +170,6 @@ export default function () {
                             </Link>
                         </div>
                     </div>
-                    <div id='index-page-description' style={{ textAlign: "center"}}>
-                        如果你想在这里发呆,可以听这首歌!
-                    </div>
-                    <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="260" height="52" src="https://music.163.com/outchain/player?type=2&id=2029600395&auto=1&height=32"></iframe>
                 </div>
             </div>
         </Layout>
