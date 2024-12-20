@@ -44,6 +44,18 @@ Empty old City - Chronicle A (English Ver.)<br />**
     this is what slow dancing feels like<br />
     this is what falling in love feels like<br />
 </details>
+
+<details>
+    <summary>Will Stetson - 超绝男声</summary>
+
+    每首都是五颗星!
+
+    My R<br />
+    phony<br />
+    Morality Lesson<br />
+    Lower One's Eyes<br />
+    Kaikai Kitan<br />
+</details>
     
 ### 普通榜
 

@@ -84,6 +84,11 @@ const config = {
             position: 'left',
           },
           {
+            to: '/docs/song',
+            label: '来听歌吧',
+            position: 'left',
+          },
+          {
             href: 'https://api.lolimi.cn/60/',
             label: '每日60秒',
             position: 'left',
