@@ -5,39 +5,40 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <title>BALL SIMULATE</title>
-    <style>
-        html,
-        body {
-            background-color: #222;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        div.ballmap {
-            height: calc(min(92vh, 92vw));
-            margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
-        }
-
-        canvas.ballmap {
-            height: 100%;
-            width: 100%;
-            background-color: #fff;
-        }
-
-        button.back {
-            font-family: SimHei;
-            text-align: center;
-            border: 1px solid #fff;
-            color: #d8d8d8;
-            font-size: 2vh;
-            background-color: #00000080;
-        }
-
-        button.back:hover {
-            background-color: #80808080;
-        }
-    </style>
 </head>
+
+<style>
+    html,
+    body {
+        background-color: #222;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    div.ballmap {
+        height: calc(min(92vh, 92vw));
+        margin: calc((97.5vh - min(95vh, 95vw)) / 2) calc((97.5vw - min(95vh, 95vw)) / 2);
+    }
+
+    canvas.ballmap {
+        height: 100%;
+        width: 100%;
+        background-color: #fff;
+    }
+
+    button.back {
+        font-family: SimHei;
+        text-align: center;
+        border: 1px solid #fff;
+        color: #d8d8d8;
+        font-size: 2vh;
+        background-color: #00000080;
+    }
+
+    button.back:hover {
+        background-color: #80808080;
+    }
+</style>
 
 <body onmousemove="/HideMenu()/" oncontextmenu="return false" ondragstart="return false" onselectstart="return false"
     onselect="document.selection.empty()" oncopy="document.selection.empty()" onbeforecopy="return false"
