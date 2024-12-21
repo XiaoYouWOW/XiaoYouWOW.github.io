@@ -78,7 +78,7 @@ const config = {
             label: '博客',
             position: 'left' },
           {
-            to: '/docs',
+            to: '/docs/intro',
             label: '文档',
             position: 'left',
           },
