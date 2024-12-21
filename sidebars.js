@@ -29,28 +29,17 @@ const sidebars = {
   ],
    */
 
+  //这里是docs侧边栏的设置
+  /*
+    intro - intro.md
+    下面的category则是创建了一个集合存放一系列文件
+  */
   tutorialSidebar: [
-    {
-      type: 'html',
-      value: '<iframe frameborder="no" marginwidth="0" marginheight="0" width="280" height="86" src="//music.163.com/outchain/player?type=2&id=2029600395&auto=1&height=66"></iframe>'
-    },
     'intro',
-    'jrrp',
-    'song',
-    'game',
     {
       type: 'category',
       label: 'HTML项目',
       items: ['html/maze', 'html/ball', 'html/art', 'html/gal'],
-    },
-    {
-      type: 'category',
-      label: '冷咲话',
-      items: [{
-        type: 'doc',
-        label: '咲希了',
-        id: 'joke/joke',
-      }],
     }
   ],
 };

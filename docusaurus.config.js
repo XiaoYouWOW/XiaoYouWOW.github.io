@@ -8,20 +8,21 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: '狐莱姆在盯着你...',
-  tagline: '可安可可可爱了!',
+  //这里需要改
+  title: '这里是网站最上端的标题',
+  tagline: '雀魂',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://qhlg.flime.top',
+  url: 'https://dream-league.fun',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'QHMY114514', // Usually your GitHub org/user name.
-  projectName: 'QHMY114514.github.io', // Usually your repo name.
+  organizationName: 'XiaoYouWOW', // Usually your GitHub org/user name.
+  projectName: 'XiaoYouWOW.github.io', // Usually your repo name.
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
@@ -48,7 +49,8 @@ const config = {
 
         },
         blog: {
-          blogSidebarTitle: '乾狐离光的日记本',
+          //这里需要改
+          blogSidebarTitle: '这里是标题AAA',
           blogSidebarCount: 10,
           showReadingTime: true,
 
@@ -63,103 +65,60 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
+      // 把这里换成你的头像
       image: 'img/fox.jpg',
       navbar: {
-        title: '乾狐之家,狐狸的衣柜!',
+        title: '这是网站左上角的标题',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
         },
         items: [
-          { to: '/blog', label: '不准看这里', position: 'left' },
+          { to: '/blog',
+            label: '博客',
+            position: 'left' },
           {
-            to: '/docs/intro',
-            position: 'left',
-            label: '可以看这里',
-          },
-          {
-            to: '/docs/jrrp',
-            label: '今日人品',
+            to: '/docs',
+            label: '文档',
             position: 'left',
           },
           {
-            to: '/docs/song',
-            label: '来听歌吧',
-            position: 'left',
-          },
-          {
-            href: 'https://api.lolimi.cn/60/',
-            label: '每日60秒',
-            position: 'left',
-          },
-          {
-            href: 'https://github.com/QHMY114514',
+            href: 'https://github.com/XiaoYouWOW',
             label: 'MyGitHub',
             position: 'right',
           },
         ],
       },
       footer: {
+        //你需要改这里,这里是脚注
         style: 'light',
         links: [
           {
-            title: '联系狐狸',
+            title: '这里是底栏',
             items: [
               {
-                label: '我的哔哩哔哩主页',
-                href: 'https://space.bilibili.com/454816001',
-              },
-              {
-                label: '我的个人群(QQ)',
-                href: 'https://qm.qq.com/q/bImTc3BPsA',
-              },
-              {
-                label: 'Flime官方群(QQ)',
-                href: 'https://qm.qq.com/q/qatSwAhTQk',
+                label: '这里可以填入网址',
+                href: 'https://github.com/XiaoYouWOW',
               }
             ],
           },
           {
-            title: '你想找什么?',
+            title: '这里可以引用根目录下的文件',
             items: [
               {
-                label: '狐狸是谁?',
+                label: '你好',
                 to: '/docs/intro',
-              },
-              {
-                label: '狐狸怎么叫?',
-                to: '/blog',
-              },
-              {
-                label: '小玩具',
-                to: '/docs/game',
-              },
-              {
-                label: '狐狸的GitHub主页',
-                href: 'https://github.com/QHMY114514',
-              },
+              }
             ],
           },
           {
             title: '友情链接',
             items: [
-              {
-                label: '户山兔兔的小站',
-                href: 'https://danieltoyama.fun',
-              },
-              {
-                label: 'YukieBot(by 户山兔兔)',
-                href: 'https://yukiebot.top',
-              },
-              {
-                label: '桑帛云API',
-                href: 'https://api.lolimi.cn',
-              },
             ],
           },
         ],
-        copyright: `Copyright ©${new Date().getFullYear()} QHLG的小站. Built with Docusaurus.<br /><img style="width:32px;height:32px;margin-bottom:-12px" src="https://moe.one/view/img/ico64.png"></img><a href="https://icp.gov.moe/?keyword=20245009" target="_blank">萌ICP备20245009号</a>`,
+        //你需要改这里
+        copyright: `Copyright ©${new Date().getFullYear()} 你的网站的标题. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,
@@ -174,11 +133,6 @@ const config = {
     }),
   // Add the Cloudflare Web Analytics script
   scripts: [
-    {
-      src: 'https://static.cloudflareinsights.com/beacon.min.js',
-      async: true,
-      'data-cf-beacon': '{"token": "83e661b0d0b74b4eb1f798f1af124003"}',
-    },
   ],
 };
 
