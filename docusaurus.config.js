@@ -125,10 +125,10 @@ const config = {
         darkTheme: prismThemes.dracula,
       },
       giscus: {
-        repo: 'QHMY114514/QHMY114514.github.io',
-        repoId: 'R_kgDONW1Hww',
+        repo: 'XiaoYouWOW/XiaoYouWOW.github.io',
+        repoId: 'R_kgDONgp43Q',
         category: 'General',
-        categoryId: 'DIC_kwDONW1Hw84ClS0T',
+        categoryId: 'DIC_kwDONgp43c4ClbBQ',
       }
     }),
   // Add the Cloudflare Web Analytics script
